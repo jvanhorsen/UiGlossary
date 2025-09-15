@@ -4,6 +4,29 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UI Component Glossary — Live Examples</title>
+<meta name="description" content="Glossary of canonical UI components with live examples for AI-assisted development." />
+<meta name="theme-color" content="#0b0d12" />
+<meta property="og:title" content="UI Component Glossary — AI-Assisted Dev Reference" />
+<meta property="og:description" content="Common UI elements labeled with canonical names, synonyms, and live behavior." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="og-image.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="UI Component Glossary — AI-Assisted Dev Reference" />
+<!-- SVG backup -->
+<meta property="og:image" content="og-image.svg" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="UI Component Glossary — AI-Assisted Dev Reference" />
+<meta name="twitter:description" content="Common UI elements labeled with canonical names, synonyms, and live behavior." />
+<meta name="twitter:image" content="og-image.png" />
+<link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="shortcut icon" href="favicon-32.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
+<link rel="mask-icon" href="favicon.svg" color="#0b0d12" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-3KWQP4SWGD"></script>
 <script>
@@ -135,10 +158,27 @@
   .carousel{position:relative; overflow:hidden; border-radius:12px; border:1px solid var(--border)}
   .carousel__inner{display:flex; transition:transform .25s}
   .carousel__slide{min-width:100%; padding:24px; background:#111623}
-  .carousel__nav{position:absolute; inset:auto 10px 10px auto; display:flex; gap:8px}
+  .carousel__nav{position:static; display:flex; gap:8px; justify-content:flex-end; padding:8px 8px 8px 8px}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
   /* Toast styled to match .btn.primary gradient */
   #toast{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0b0d12; border:none}
+  /* Keep primary gradient on nav CTA hover */
+  .nav__links a.btn.primary:hover{background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+  /* Anchor copy button */
+  .anchor-btn{appearance:none; border:none; background:transparent; color:#9aa3b6; cursor:pointer; padding:4px; border-radius:6px; margin-left:6px}
+  .anchor-btn:hover{color:#c4ccda}
+  /* Light theme */
+  :root[data-theme="light"]{
+    --bg:#f7f9fc; --panel:#ffffff; --card:#ffffff; --muted:#5b677b; --text:#0b0d12;
+    --border:#dbe1ea; --chip:#f0f3f9;
+  }
+  :root[data-theme="light"] body{background:linear-gradient(180deg,#f7f9fc,#eef2f8 50%, #f7f9fc 100%)}
+  :root[data-theme="light"] .btn{background:#f3f6fb; border-color:#dbe1ea; color:var(--text)}
+  :root[data-theme="light"] .btn:hover{background:#e8eef7}
+  :root[data-theme="light"] .panel{background:var(--panel); border-color:var(--border)}
+  :root[data-theme="light"] .card{background:var(--card); border-color:var(--border)}
+  :root[data-theme="light"] .chip{background:#f3f6fb; border-color:var(--border)}
+  :root[data-theme="light"] .input, :root[data-theme="light"] select, :root[data-theme="light"] textarea{background:#ffffff; border-color:#dbe1ea; color:var(--text)}
 </style>
 </head>
 <body>
@@ -159,6 +199,7 @@
         <a href="#feedback">Feedback</a>
         <a href="#data-display">Data Display</a>
         <a href="#overlays">Overlays</a>
+        <a id="suggest-link" target="_blank" rel="noopener noreferrer" href="https://github.com/jvanhorsen/UiGlossary/issues/new?title=Suggestion%3A%20%5BComponent%20Name%5D&body=Please%20provide%20details%3A%0A%0A-%20Component%20name%3A%0A-%20Synonyms%3A%0A-%20Category%20(Layout%2FInputs%2FNavigation%2FData%20Display%2FFeedback%2FOverlays)%3A%0A-%20Why%20it%27s%20useful%3A%0A-%20Example%20links%3A%0A-%20Notes%3A%0A%0AThanks!&labels=suggestion" class="btn primary">Suggest a component</a>
       </div>
     </div>
   </div>
@@ -182,7 +223,7 @@
         </div>
       </div>
       <div class="panel">
-        <div class="section-title"><h2>Legend</h2><span class="pill">a11y-friendly / no deps</span></div>
+        <div class="section-title"><h2>Legend</h2><div><button class="anchor-btn" data-anchor="#legend" aria-label="Copy link to Legend">#</button><span class="pill">a11y-friendly / no deps</span></div></div>
         <div class="grid cols-2">
           <div class="stack">
             <span class="badge">Canonical name</span>
@@ -206,7 +247,7 @@
 
     <!-- LAYOUT -->
     <section id="layout" style="margin-top:28px">
-      <div class="section-title"><h2>Layout primitives</h2><span class="pill">Container · Grid · Card · Section · Toolbar</span></div>
+      <div class="section-title"><h2>Layout primitives</h2><div><button class="anchor-btn" data-anchor="#layout" aria-label="Copy link to Layout">#</button><span class="pill">Container · Grid · Card · Section · Toolbar</span></div></div>
       <div class="grid cols-3">
         <div class="card">
           <span class="label" data-chip>Container</span>
@@ -234,7 +275,7 @@
 
     <!-- INPUTS -->
     <section id="inputs" style="margin-top:28px">
-      <div class="section-title"><h2>Form / Input controls</h2><span class="pill">TextField · TextArea · Select · Checkbox · Radio · Switch · Slider · ComboBox</span></div>
+      <div class="section-title"><h2>Form / Input controls</h2><div><button class="anchor-btn" data-anchor="#inputs" aria-label="Copy link to Inputs">#</button><span class="pill">TextField · TextArea · Select · Checkbox · Radio · Switch · Slider · ComboBox</span></div></div>
       <div class="grid cols-3">
         <div class="card">
           <span class="label" data-chip>Text Field</span>
@@ -324,7 +365,7 @@
 
     <!-- NAVIGATION -->
     <section id="navigation" style="margin-top:28px">
-      <div class="section-title"><h2>Navigation</h2><span class="pill">Navbar · Tabs · Breadcrumbs · Pagination · Sidebar/Drawer</span></div>
+      <div class="section-title"><h2>Navigation</h2><div><button class="anchor-btn" data-anchor="#navigation" aria-label="Copy link to Navigation">#</button><span class="pill">Navbar · Tabs · Breadcrumbs · Pagination · Sidebar/Drawer</span></div></div>
       <div class="grid cols-3">
         <div class="card">
           <span class="label" data-chip>Tabs</span>
@@ -364,7 +405,7 @@
 
     <!-- DATA DISPLAY -->
     <section id="data-display" style="margin-top:28px">
-      <div class="section-title"><h2>Data display</h2><span class="pill">Table · List · Card · Avatar · Badge · Chip · Tag</span></div>
+      <div class="section-title"><h2>Data display</h2><div><button class="anchor-btn" data-anchor="#data-display" aria-label="Copy link to Data display">#</button><span class="pill">Table · List · Card · Avatar · Badge · Chip · Tag</span></div></div>
       <div class="grid cols-3">
         <div class="card">
           <span class="label" data-chip>Table</span>
@@ -409,7 +450,7 @@
 
     <!-- FEEDBACK -->
     <section id="feedback" style="margin-top:28px">
-      <div class="section-title"><h2>Feedback & status</h2><span class="pill">Alert · Toast · Tooltip · Popover · Progress · Spinner · Skeleton</span></div>
+      <div class="section-title"><h2>Feedback & status</h2><div><button class="anchor-btn" data-anchor="#feedback" aria-label="Copy link to Feedback">#</button><span class="pill">Alert · Toast · Tooltip · Popover · Progress · Spinner · Skeleton</span></div></div>
       <div class="grid cols-3">
         <div class="card">
           <span class="label" data-chip>Alert</span>
@@ -454,7 +495,7 @@
 
     <!-- OVERLAYS -->
     <section id="overlays" style="margin-top:28px">
-      <div class="section-title"><h2>Overlays</h2><span class="pill">Modal/Dialog · Drawer/Sidebar · Accordion · Steps</span></div>
+      <div class="section-title"><h2>Overlays</h2><div><button class="anchor-btn" data-anchor="#overlays" aria-label="Copy link to Overlays">#</button><span class="pill">Modal/Dialog · Drawer/Sidebar · Accordion · Steps</span></div></div>
       <div class="grid cols-3">
         <div class="card">
           <span class="label" data-chip>Accordion</span>
@@ -500,6 +541,7 @@
         <div>
           <div class="tiny">Names here align with modern design systems: “Tabs”, “ComboBox”, “Toast”, “Drawer”, “Chip”, etc.</div>
           <div class="tiny"><i>As defined by ChatGPT 5 - Sept. 14, 2025</i></div>
+          <div class="tiny" id="version-stamp">v0.1 • Last updated: <span id="last-updated"></span></div>
         </div>
         <div style="text-align:right">
           <span class="badge">Made by <a href="https://www.joshvh.com/">Joshua Van Horsen</a></span>
@@ -619,7 +661,12 @@
 
   // --- Nav link tracking (desktop too)
   document.querySelectorAll('.nav__links a').forEach(a=>{
-    a.addEventListener('click', ()=> track('nav_click', {link_text: a.textContent.trim(), link_href: a.getAttribute('href')}));
+    a.addEventListener('click', ()=>{
+      const href = a.getAttribute('href');
+      const isSuggest = a.id === 'suggest-link';
+      if(isSuggest){ track('suggest_click', {source:'nav'}); }
+      track('nav_click', {link_text: a.textContent.trim(), link_href: href});
+    });
   });
 
   // --- Carousel
@@ -720,6 +767,22 @@
     if(label==='›') action = 'next';
     track('pagination_click', {action});
   }));
+
+  // --- Anchor copy buttons
+  document.querySelectorAll('.anchor-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const anchor = btn.getAttribute('data-anchor');
+      if(!anchor) return;
+      const url = location.origin + location.pathname + anchor;
+      try{ await navigator.clipboard.writeText(url); track('anchor_copy', {anchor}); }catch(_){ /* ignore */ }
+    });
+  });
+
+  // --- Version stamp last updated
+  const lastUpdatedEl = document.getElementById('last-updated');
+  if(lastUpdatedEl){
+    try{ const d = new Date(document.lastModified); lastUpdatedEl.textContent = d.toLocaleDateString(); }catch(_){ lastUpdatedEl.textContent = ''; }
+  }
 </script>
 </body>
 </html>

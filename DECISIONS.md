@@ -81,7 +81,13 @@ Changelog
 - 2025-09-15: Added fade/slide animation for mobile nav dropdown; hidden via visibility/opacity/pointer-events and transitions for a smooth open/close.
 - 2025-09-15: Integrated GA4 (gtag.js) with measurement id `G-3KWQP4SWGD` in the document head.
 - 2025-09-15: Added GA4 event tracking helper and wired events: tabs, popover, modal open/close/confirm, drawer open/close, toast show, nav toggle and link clicks, carousel prev/next with indices, combobox selection, checkbox/radio/switch/range/select/text inputs, date/time changes, accordion toggle, breadcrumb clicks, pagination clicks, and keyboard shortcuts (labels toggle, theme cycle).
- - 2025-09-15: GA4 debug mode: append `?debug=1` to the URL to log all `track()` calls to the console.
+- 2025-09-15: GA4 debug mode: append `?debug=1` to the URL to log all `track()` calls to the console.
+- 2025-09-15: Added “Suggest a component” link to GitHub issues with prefilled template; tracks `suggest_click` in GA4.
+- 2025-09-15: Added Open Graph/Twitter image `og-image.svg` and wired meta tags (`og:image`, `twitter:image`, `summary_large_image`).
+ - 2025-09-15: Exported `og-image.png` from the local SVG and set it as primary OG/Twitter image (kept SVG as backup).
+ - 2025-09-15: Added footer version stamp (v0.1) and auto-filled “Last updated” date.
+ - 2025-09-15: Added anchor copy buttons on section titles; copies deep link and tracks `anchor_copy`.
+ - 2025-09-15: Removed the light/dark theme toggle from the UI (left CSS for future use).
 
 GA4 custom definitions (recommended mappings)
 Why: Custom event parameters don’t automatically appear in standard GA4 reports. Register them as Custom dimensions/metrics in Admin to analyze and build comparisons/segments. Keep under GA4 limits (typically ~50 event-scoped dimensions and ~50 custom metrics per property). Prefer low-cardinality fields.
