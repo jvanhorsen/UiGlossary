@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UI Component Glossary — Live Examples</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3KWQP4SWGD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3KWQP4SWGD');
+  
+</script>
+<style>
+  :root{
+    --bg: #0b0d12; --panel:#12151d; --card:#171b24; --muted:#7a8599; --text:#e6e9ef;
+    --accent:#6aa3ff; --accent-2:#9b8cff; --ok:#3ddc97; --warn:#ffcc66; --err:#ff6b6b;
+    --border:#232838; --chip:#20263b; --shadow: 0 6px 20px rgba(0,0,0,.35);
+    --radius:12px; --radius-sm:8px; --radius-lg:16px; --focus: 0 0 0 3px rgba(106,163,255,.35);
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:linear-gradient(180deg,#0b0d12,#0c111b 50%, #0b0d12 100%);
+    color:var(--text); font: 15px/1.5 var(--font);
+  }
+  a{color:var(--accent); text-decoration:none}
+  a:focus,button:focus,[role="tab"]:focus,[data-chip]:focus{outline:none; box-shadow: var(--focus); border-radius:8px}
+  .container{max-width:1200px;margin:0 auto;padding:48px 24px}
+  .nav{
+    position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.3) blur(10px);
+    background:rgba(11,13,18,.6); border-bottom:1px solid var(--border)
+  }
+  .nav__inner{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 24px; position:relative}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+  .brand__logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow: var(--shadow)}
+  .nav__links{display:flex;gap:16px; flex-wrap:wrap}
+  .nav__links a{padding:8px 10px;border-radius:8px}
+  .nav__links a:hover{background:rgba(255,255,255,.05)}
+  .nav__toggle{display:none; appearance:none; border:1px solid var(--border); background:#141a28; color:var(--text); padding:0; border-radius:8px; cursor:pointer; position:relative; width:40px; height:36px}
+  .nav__toggle .bar{position:absolute; width:20px; height:2px; left:50%; transform:translateX(-50%); background:var(--text); border-radius:2px; transition:transform .2s ease, opacity .2s ease}
+  .nav__toggle .bar.top{top:12px}
+  .nav__toggle .bar.middle{top:17px}
+  .nav__toggle .bar.bottom{top:22px}
+  .nav__toggle[aria-expanded="true"] .bar.top{transform:translateX(-50%) rotate(45deg); top:17px}
+  .nav__toggle[aria-expanded="true"] .bar.middle{opacity:0}
+  .nav__toggle[aria-expanded="true"] .bar.bottom{transform:translateX(-50%) rotate(-45deg); top:17px}
+  .hero{
+    display:grid; grid-template-columns: 1.1fr .9fr; gap:28px; align-items:center; margin-top:16px
+  }
+  .hero h1{font-size:34px; line-height:1.15; margin:0 0 12px}
+  .hero p{color:var(--muted); margin:0 0 18px}
+  .btn{appearance:none;border:1px solid var(--border); background:#1b2130; color:var(--text);
+       padding:10px 14px;border-radius:10px;cursor:pointer}
+  .btn:hover{background:#222a3c}
+  .btn.primary{border:none;background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0b0d12; font-weight:700}
+  .btn.ghost{background:transparent;border:1px dashed var(--border)}
+  .cta-row{display:flex;gap:10px;flex-wrap:wrap}
+  .panel{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+  .grid{display:grid; gap:16px}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media (max-width:980px){.hero{grid-template-columns:1fr}.grid.cols-3{grid-template-columns:1fr 1fr}}
+  @media (max-width:680px){.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}}
+  @media (max-width:860px){
+    .nav__toggle{display:inline-flex; align-items:center; gap:6px}
+    .nav__links{display:flex; position:absolute; right:24px; top:calc(100% + 8px); background:#111623; border:1px solid var(--border); border-radius:10px; padding:10px; box-shadow:var(--shadow); flex-direction:column; gap:6px; opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-6px) scale(.98); transition:opacity .18s ease, transform .18s ease, visibility 0s linear .18s; will-change:transform, opacity; transform-origin:top right}
+    .nav__links.open{opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0) scale(1); transition:opacity .18s ease, transform .18s ease}
+    .nav__links a{padding:10px 12px}
+  }
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); position:relative}
+  .card h3{margin:0 0 2px; font-size:16px}
+  .card p{margin:0;color:var(--muted)}
+  .label{position:absolute; top:10px; right:10px; font-size:12px; color:#aeb6c7; background:var(--chip); border:1px solid var(--border); padding:4px 8px; border-radius:999px}
+  .syn{font-size:12px; color:#9aa3b6; margin-top:6px}
+  .stack{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .input, select, textarea{width:100%; background:#141925; color:var(--text); border:1px solid var(--border); border-radius:10px; padding:10px}
+  .input:focus, select:focus, textarea:focus{outline:none; box-shadow: var(--focus)}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .row-3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .field label{display:block; font-size:12px; color:#9aa3b6; margin-bottom:6px}
+  .checkbox,.radio,.switch{display:flex; align-items:center; gap:8px}
+  .switch input{display:none}
+  .switch .track{width:40px;height:22px;border-radius:999px;background:#2a3245; position:relative; border:1px solid var(--border)}
+  .switch .thumb{position:absolute; top:50%; left:3px; transform:translateY(-50%); width:16px; height:16px; border-radius:50%; background:#c8d1e1; transition:all .2s}
+  .switch input:checked + .track{background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+  .switch input:checked + .track .thumb{left:21px; background:#0b0d12}
+  .table{width:100%; border-collapse:collapse; font-size:14px}
+  .table th,.table td{padding:10px;border-bottom:1px solid var(--border); text-align:left}
+  .table th{color:#aeb6c7; font-weight:600}
+  .badge{display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:var(--chip); font-size:12px}
+  .chip{display:inline-flex; align-items:center; gap:6px; padding:5px 8px; border-radius:999px; border:1px solid var(--border); background:#1b2130; font-size:12px}
+  .chip button{border:none;background:transparent;color:#aab3c6; cursor:pointer}
+  .tabs{display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:10px; flex-wrap:wrap}
+  .tab{padding:8px 12px; border-radius:10px 10px 0 0; border:1px solid transparent; cursor:pointer}
+  .tab[aria-selected="true"]{background:#1a2030; border-color:var(--border); border-bottom-color:#1a2030}
+  .accordion details{border:1px solid var(--border); border-radius:10px; padding:10px; background:#121827}
+  .accordion summary{cursor:pointer}
+  .progress{height:8px; background:#1a2131; border-radius:999px; overflow:hidden; border:1px solid var(--border)}
+  .progress > div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); width:62%}
+  .spinner{width:28px;height:28px;border-radius:50%; border:3px solid #2a3245; border-top-color:var(--accent); animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .skeleton{height:12px;border-radius:6px;background:linear-gradient(90deg,#1a2030, #252c40, #1a2030); background-size:200% 100%; animation:shimmer 1.2s infinite}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .alert{padding:10px 12px;border-radius:10px;border:1px solid var(--border); display:flex; gap:8px; align-items:flex-start}
+  .alert.ok{background:#11231d;border-color:#1f3c2f}
+  .alert.warn{background:#2d250f;border-color:#3c3218}
+  .alert.err{background:#351a1a;border-color:#4a2323}
+  .tooltip{position:relative; display:inline-block}
+  .tooltip .tip{position:absolute; inset:auto auto 125% 50%; transform:translateX(-50%); background:#101522; border:1px solid var(--border); padding:6px 8px; border-radius:8px; font-size:12px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .2s}
+  .tooltip:hover .tip{opacity:1}
+  .popover{position:relative}
+  .popover .pop{position:absolute; top:38px; left:0; background:#101522; border:1px solid var(--border); padding:10px; border-radius:10px; width:220px; display:none}
+  .popover.open .pop{display:block}
+  .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:24px}
+  .modal{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; width:min(560px, 92vw); box-shadow:var(--shadow)}
+  .drawer{position:fixed; inset:0 auto 0 0; width:min(420px, 92vw); background:var(--panel); border-right:1px solid var(--border); translate:-100% 0; transition:translate .25s; box-shadow:var(--shadow); padding:16px; z-index:1000}
+  .drawer.open{translate:0 0}
+  .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0f1421; border:1px solid var(--border); padding:2px 6px; border-radius:6px; font-size:12px; color:#aeb6c7}
+  .footer{margin-top:32px; color:#8892a8}
+  .tiny{font-size:12px; color:#9aa3b6}
+  .section-title{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:26px 0 10px}
+  .section-title h2{margin:0; font-size:18px}
+  .pill{display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; background:#111623; border:1px solid var(--border); color:#aeb6c7; font-size:12px}
+  .kbdrow{display:flex; gap:8px; flex-wrap:wrap}
+  .pagination{display:flex; gap:6px; align-items:center}
+  .pagination .pg{border:1px solid var(--border); background:#141a28; border-radius:8px; min-width:36px; height:36px; display:grid;place-items:center; cursor:pointer}
+  .pagination .pg[aria-current="page"]{background:#1f2636; border-color:#30384e; font-weight:700}
+  .breadcrumb{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .breadcrumb span{color:#9aa3b6}
+  .carousel{position:relative; overflow:hidden; border-radius:12px; border:1px solid var(--border)}
+  .carousel__inner{display:flex; transition:transform .25s}
+  .carousel__slide{min-width:100%; padding:24px; background:#111623}
+  .carousel__nav{position:absolute; inset:auto 10px 10px auto; display:flex; gap:8px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+  /* Toast styled to match .btn.primary gradient */
+  #toast{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0b0d12; border:none}
+</style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <div class="nav" role="navigation" aria-label="Primary">
+    <div class="nav__inner container">
+      <div class="brand"><div class="brand__logo" aria-hidden="true"></div> UI Component Glossary</div>
+      <button class="nav__toggle" id="nav-toggle" aria-expanded="false" aria-controls="primary-links" aria-label="Toggle navigation">
+        <span class="sr-only">Menu</span>
+        <span class="bar top"></span>
+        <span class="bar middle"></span>
+        <span class="bar bottom"></span>
+      </button>
+      <div class="nav__links" id="primary-links">
+        <a href="#layout">Layout</a>
+        <a href="#inputs">Inputs</a>
+        <a href="#navigation">Navigation</a>
+        <a href="#feedback">Feedback</a>
+        <a href="#data-display">Data Display</a>
+        <a href="#overlays">Overlays</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- HERO / HEADER -->
+    <section class="hero">
+      <div>
+        <h1>Common UI elements, labeled with canonical names</h1>
+        <p>
+          Use this as a shared language with designers/devs. Each card shows the element preview,
+          the <span class="badge">canonical name</span>, and any common synonyms.
+        </p>
+        <div class="cta-row">
+          <button class="btn primary" id="open-modal">Open “Modal / Dialog”</button>
+          <button class="btn" id="open-drawer">Open “Drawer”</button>
+          <button class="btn ghost" id="show-toast">Show “Toast / Snackbar”</button>
+        </div>
+        <div class="syn tiny" style="margin-top:10px">
+          Tip: press <span class="kbd">?</span> to toggle labels, <span class="kbd">T</span> to cycle theme accents.
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-title"><h2>Legend</h2><span class="pill">a11y-friendly / no deps</span></div>
+        <div class="grid cols-2">
+          <div class="stack">
+            <span class="badge">Canonical name</span>
+            <span class="tiny">What I’ll call it in conversation & code.</span>
+          </div>
+          <div class="stack">
+            <span class="chip"><span>Synonyms</span></span>
+            <span class="tiny">Alternative terms you might hear.</span>
+          </div>
+          <div class="stack">
+            <span class="chip">Interactive</span>
+            <span class="tiny">Click to see behavior.</span>
+          </div>
+          <div class="stack">
+            <span class="chip">Layout</span>
+            <span class="tiny">Spacing & structure primitives.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYOUT -->
+    <section id="layout" style="margin-top:28px">
+      <div class="section-title"><h2>Layout primitives</h2><span class="pill">Container · Grid · Card · Section · Toolbar</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <span class="label" data-chip>Container</span>
+          <h3>Container</h3>
+          <p class="syn">Synonyms: <em>page wrapper, max-width container</em></p>
+          <div class="panel" style="margin-top:10px">This page uses a <strong>.container</strong> to center content.</div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Grid</span>
+          <h3>Grid</h3>
+          <p class="syn">Synonyms: <em>layout grid, columns</em></p>
+          <div class="grid cols-2" style="margin-top:10px">
+            <div class="panel">Column A</div>
+            <div class="panel">Column B</div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Card</span>
+          <h3>Card</h3>
+          <p class="syn">Synonyms: <em>tile, panel</em></p>
+          <div class="panel" style="margin-top:10px">Cards bundle content & actions.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INPUTS -->
+    <section id="inputs" style="margin-top:28px">
+      <div class="section-title"><h2>Form / Input controls</h2><span class="pill">TextField · TextArea · Select · Checkbox · Radio · Switch · Slider · ComboBox</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <span class="label" data-chip>Text Field</span>
+          <h3>Text Field</h3>
+          <p class="syn">Synonyms: <em>input, text input</em></p>
+          <div class="field" style="margin-top:10px">
+            <label for="i1">Label</label>
+            <input id="i1" class="input" placeholder="Placeholder" />
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Text Area</span>
+          <h3>Text Area</h3>
+          <p class="syn">Synonyms: <em>multiline input</em></p>
+          <div class="field" style="margin-top:10px">
+            <label for="i2">Label</label>
+            <textarea id="i2" rows="3" placeholder="Write something..." ></textarea>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Select</span>
+          <h3>Select</h3>
+          <p class="syn">Synonyms: <em>dropdown, native select</em></p>
+          <div class="field" style="margin-top:10px">
+            <label for="i3">Label</label>
+            <select id="i3">
+              <option>Choose…</option>
+              <option>Alpha</option>
+              <option>Bravo</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Checkbox</span>
+          <h3>Checkbox</h3>
+          <p class="syn">Synonyms: <em>box</em></p>
+          <div class="checkbox" style="margin-top:10px">
+            <input id="c1" type="checkbox" /> <label for="c1">Receive updates</label>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Radio Group</span>
+          <h3>Radio Group</h3>
+          <p class="syn">Synonyms: <em>radio buttons</em></p>
+          <div class="stack" role="radiogroup" aria-label="plan" style="margin-top:10px">
+            <label class="radio"><input name="plan" type="radio" checked /> Basic</label>
+            <label class="radio"><input name="plan" type="radio" /> Pro</label>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Switch</span>
+          <h3>Switch</h3>
+          <p class="syn">Synonyms: <em>toggle</em></p>
+          <label class="switch" style="margin-top:10px">
+            <input type="checkbox" id="sw1" />
+            <span class="track"><span class="thumb"></span></span>
+            <span class="tiny" style="margin-left:8px">Enable notifications</span>
+          </label>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Slider</span>
+          <h3>Slider</h3>
+          <p class="syn">Synonyms: <em>range</em></p>
+          <input type="range" min="0" max="100" value="35" style="width:100%; margin-top:18px" />
+        </div>
+        <div class="card">
+          <span class="label" data-chip>ComboBox (Autocomplete)</span>
+          <h3>ComboBox</h3>
+          <p class="syn">Synonyms: <em>autocomplete, typeahead</em></p>
+          <div class="field" style="margin-top:10px">
+            <input id="combo" class="input" placeholder="Type: apple, banana, cherry" autocomplete="off" />
+            <div id="combo-list" class="panel" style="display:none;margin-top:6px; max-height:150px; overflow:auto"></div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Button</span>
+          <h3>Buttons</h3>
+          <p class="syn">Synonyms: <em>primary, secondary, ghost</em></p>
+          <div class="stack" style="margin-top:10px">
+            <button class="btn primary">Primary</button>
+            <button class="btn">Default</button>
+            <button class="btn ghost">Ghost</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NAVIGATION -->
+    <section id="navigation" style="margin-top:28px">
+      <div class="section-title"><h2>Navigation</h2><span class="pill">Navbar · Tabs · Breadcrumbs · Pagination · Sidebar/Drawer</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <span class="label" data-chip>Tabs</span>
+          <h3>Tabs</h3>
+          <p class="syn">Synonyms: <em>tabset</em></p>
+          <div class="tabs" role="tablist" aria-label="Example tabs">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="t1" id="tab1">Overview</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="t2" id="tab2">Details</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="t3" id="tab3">Activity</button>
+          </div>
+          <div id="t1" role="tabpanel" aria-labelledby="tab1">Tab content: overview.</div>
+          <div id="t2" role="tabpanel" aria-labelledby="tab2" hidden>Tab content: details.</div>
+          <div id="t3" role="tabpanel" aria-labelledby="tab3" hidden>Tab content: activity log.</div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Breadcrumbs</span>
+          <h3>Breadcrumbs</h3>
+          <p class="syn">Synonyms: <em>breadcrumb trail</em></p>
+          <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-top:8px">
+            <a href="#">Home</a><span>›</span><a href="#">Library</a><span>›</span><span aria-current="page">Data</span>
+          </nav>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Pagination</span>
+          <h3>Pagination</h3>
+          <p class="syn">Synonyms: <em>pager</em></p>
+          <div class="pagination" style="margin-top:8px">
+            <button class="pg" aria-label="Previous">‹</button>
+            <button class="pg" aria-current="page">1</button>
+            <button class="pg">2</button>
+            <button class="pg">3</button>
+            <button class="pg" aria-label="Next">›</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA DISPLAY -->
+    <section id="data-display" style="margin-top:28px">
+      <div class="section-title"><h2>Data display</h2><span class="pill">Table · List · Card · Avatar · Badge · Chip · Tag</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <span class="label" data-chip>Table</span>
+          <h3>Table</h3>
+          <p class="syn">Synonyms: <em>data grid (basic)</em></p>
+          <table class="table" aria-label="Example table" style="margin-top:10px">
+            <thead><tr><th>User</th><th>Status</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Jane</td><td><span class="badge">Active</span></td><td>Admin</td></tr>
+              <tr><td>Raj</td><td><span class="badge">Invited</span></td><td>Member</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Chip</span>
+          <h3>Chips / Tags</h3>
+          <p class="syn">Synonyms: <em>token, pill</em></p>
+          <div class="stack" style="margin-top:10px">
+            <span class="chip">analytics <button aria-label="remove">×</button></span>
+            <span class="chip">billing <button aria-label="remove">×</button></span>
+            <span class="chip">security <button aria-label="remove">×</button></span>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Carousel</span>
+          <h3>Carousel</h3>
+          <p class="syn">Synonyms: <em>slider (content)</em></p>
+          <div class="carousel" id="carousel" style="margin-top:10px">
+            <div class="carousel__inner">
+              <div class="carousel__slide">Slide 1 — lightweight content slider</div>
+              <div class="carousel__slide">Slide 2 — another panel</div>
+              <div class="carousel__slide">Slide 3 — final slide</div>
+            </div>
+            <div class="carousel__nav">
+              <button class="btn ghost" id="car-prev">Prev</button>
+              <button class="btn ghost" id="car-next">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section id="feedback" style="margin-top:28px">
+      <div class="section-title"><h2>Feedback & status</h2><span class="pill">Alert · Toast · Tooltip · Popover · Progress · Spinner · Skeleton</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <span class="label" data-chip>Alert</span>
+          <h3>Alert</h3>
+          <p class="syn">Synonyms: <em>banner</em></p>
+          <div class="stack" style="margin-top:10px">
+            <div class="alert ok">Success alert — saved.</div>
+            <div class="alert warn">Warning alert — check settings.</div>
+            <div class="alert err">Error alert — something failed.</div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Tooltip</span>
+          <h3>Tooltip</h3>
+          <p class="syn">Synonyms: <em>hover hint</em></p>
+          <div class="tooltip" style="margin-top:8px">
+            <button class="btn">Hover me</button>
+            <span class="tip" role="tooltip">Tooltip content</span>
+          </div>
+          <div class="syn" style="margin-top:10px">Popover is a click-triggered panel:</div>
+          <div class="popover" id="popover1" style="margin-top:6px">
+            <button class="btn" aria-haspopup="dialog">Toggle Popover</button>
+            <div class="pop" role="dialog" aria-modal="false">
+              <strong>Popover</strong> — lightweight contextual content.
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Progress & Loaders</span>
+          <h3>Progress / Spinner / Skeleton</h3>
+          <div class="stack" style="margin-top:10px">
+            <div class="progress" style="width:160px"><div></div></div>
+            <div class="spinner" aria-label="Loading"></div>
+            <div style="width:160px">
+              <div class="skeleton" style="width:100%; margin:6px 0 6px 0"></div>
+              <div class="skeleton" style="width:70%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OVERLAYS -->
+    <section id="overlays" style="margin-top:28px">
+      <div class="section-title"><h2>Overlays</h2><span class="pill">Modal/Dialog · Drawer/Sidebar · Accordion · Steps</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <span class="label" data-chip>Accordion</span>
+          <h3>Accordion</h3>
+          <p class="syn">Synonyms: <em>expander, disclosure</em></p>
+          <div class="accordion" style="margin-top:10px">
+            <details open>
+              <summary>Section A</summary>
+              <div class="tiny" style="margin-top:6px">Expandable content block.</div>
+            </details>
+            <details>
+              <summary>Section B</summary>
+              <div class="tiny" style="margin-top:6px">More content here.</div>
+            </details>
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Stepper</span>
+          <h3>Stepper</h3>
+          <p class="syn">Synonyms: <em>wizard, progress steps</em></p>
+          <div class="stack kbdrow" style="margin-top:10px">
+            <span class="badge">1</span> Account
+            <span class="badge">2</span> Profile
+            <span class="badge">3</span> Confirm
+          </div>
+        </div>
+        <div class="card">
+          <span class="label" data-chip>Date Picker (mock)</span>
+          <h3>Date Picker</h3>
+          <p class="syn">Synonyms: <em>calendar picker</em></p>
+          <div class="row" style="margin-top:10px">
+            <input type="date" class="input" />
+            <input type="time" class="input" />
+          </div>
+          <div class="tiny" style="margin-top:6px">Real apps use richer calendars; this shows the control’s name.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="row">
+        <div>
+          <div class="tiny">Names here align with modern design systems: “Tabs”, “ComboBox”, “Toast”, “Drawer”, “Chip”, etc.</div>
+          <div class="tiny"><i>As defined by ChatGPT 5 - Sept. 14, 2025</i></div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge">Made by <a href="https://www.joshvh.com/">Joshua Van Horsen</a></span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- DRAWER -->
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <h3 style="margin:0">Drawer</h3>
+      <button class="btn ghost" id="close-drawer" aria-label="Close drawer">Close</button>
+    </div>
+    <p class="tiny">Synonyms: <em>sidebar, slide-over</em></p>
+    <div class="syn">Use for secondary tasks without leaving the page.</div>
+  </aside>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-labelledby="modal-title">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
+        <h3 id="modal-title" style="margin:0">Modal / Dialog</h3>
+        <button class="btn ghost" id="close-modal" aria-label="Close modal">Close</button>
+      </div>
+      <p class="tiny">Synonyms: <em>dialog, lightbox (for media)</em></p>
+      <div class="syn">Focus-trapping overlay for primary tasks or confirmations.</div>
+      <div style="margin-top:14px; display:flex; gap:8px; justify-content:flex-end">
+        <button class="btn ghost" id="cancel-modal">Cancel</button>
+        <button class="btn primary" id="confirm-modal">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="panel" style="position:fixed; right:16px; bottom:16px; display:none">
+    <strong>Toast</strong> — ephemeral notification.
+  </div>
+
+<script>
+  // --- Analytics helper (GA4)
+  const __debugTrack = (()=>{ try{ return new URLSearchParams(location.search).get('debug') === '1'; }catch(_){ return false; } })();
+  const track = (eventName, params={})=>{
+    try{
+      if(__debugTrack) console.debug('[GA4 track]', eventName, params);
+      if(typeof gtag === 'function') gtag('event', eventName, params);
+    }catch(e){}
+  };
+
+  // --- Tabs
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      const group = tab.parentElement;
+      group.querySelectorAll('[role="tab"]').forEach(t=>t.setAttribute('aria-selected','false'));
+      tab.setAttribute('aria-selected','true');
+      const panels = group.parentElement.querySelectorAll('[role="tabpanel"]');
+      panels.forEach(p=>p.hidden = true);
+      document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
+      track('tab_select', {tab_id: tab.id || null, tab_label: tab.textContent.trim()});
+    });
+  });
+
+  // --- Popover
+  const pop = document.getElementById('popover1');
+  pop.querySelector('button').addEventListener('click', ()=>{
+    const isOpen = pop.classList.toggle('open');
+    track('popover_toggle', {open: isOpen});
+  });
+  document.addEventListener('click', (e)=>{
+    if(!pop.contains(e.target) && pop.classList.contains('open')){ pop.classList.remove('open'); track('popover_toggle', {open:false, reason:'outside'}); }
+  });
+
+  // --- Modal
+  const modal = document.getElementById('modal-backdrop');
+  const openModalBtn = document.getElementById('open-modal');
+  const closeModal = (reason)=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); track('modal_close', {reason: reason || 'control'}); };
+  openModalBtn.addEventListener('click', ()=>{ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); modal.querySelector('#close-modal').focus(); track('modal_open'); });
+  document.getElementById('close-modal').addEventListener('click', ()=> closeModal('button'));
+  document.getElementById('cancel-modal').addEventListener('click', ()=> closeModal('cancel'));
+  const confirmBtn = document.getElementById('confirm-modal');
+  if(confirmBtn){ confirmBtn.addEventListener('click', ()=>{ track('modal_confirm'); }); }
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal('backdrop'); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.getAttribute('aria-hidden')==='false') closeModal('escape'); });
+
+  // --- Drawer
+  const drawer = document.getElementById('drawer');
+  const openDrawerBtn = document.getElementById('open-drawer');
+  const closeDrawerBtn = document.getElementById('close-drawer');
+  openDrawerBtn.addEventListener('click', ()=>{ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); track('drawer_open'); });
+  closeDrawerBtn.addEventListener('click', ()=>{ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); track('drawer_close'); });
+
+  // --- Toast
+  const toast = document.getElementById('toast');
+  const showToastBtn = document.getElementById('show-toast');
+  showToastBtn.addEventListener('click', ()=>{
+    toast.style.display='block';
+    track('toast_show');
+    setTimeout(()=> toast.style.display='none', 1800);
+  });
+
+  // --- Mobile Nav Toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('primary-links');
+  if(navToggle && navLinks){
+    const closeNav = ()=>{ navLinks.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); };
+    navToggle.addEventListener('click', ()=>{
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+      track('nav_toggle', {expanded: isOpen});
+    });
+    // close on outside click or Escape
+    document.addEventListener('click', (e)=>{ if(!navLinks.contains(e.target) && e.target!==navToggle){ const wasOpen = navLinks.classList.contains('open'); closeNav(); if(wasOpen) track('nav_toggle', {expanded:false, reason:'outside'}); } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ const wasOpen = navLinks.classList.contains('open'); closeNav(); if(wasOpen) track('nav_toggle', {expanded:false, reason:'escape'}); } });
+    // close after clicking a link
+    navLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=>{ track('nav_click', {link_text: a.textContent.trim(), link_href: a.getAttribute('href')}); closeNav(); }));
+  }
+
+  // --- Nav link tracking (desktop too)
+  document.querySelectorAll('.nav__links a').forEach(a=>{
+    a.addEventListener('click', ()=> track('nav_click', {link_text: a.textContent.trim(), link_href: a.getAttribute('href')}));
+  });
+
+  // --- Carousel
+  const inner = document.querySelector('.carousel__inner');
+  let slide = 0;
+  const total = inner.children.length;
+  document.getElementById('car-prev').addEventListener('click', ()=>{ slide = (slide-1+total)%total; inner.style.transform=`translateX(-${slide*100}%)`; track('carousel_prev', {slide_index: slide}); });
+  document.getElementById('car-next').addEventListener('click', ()=>{ slide = (slide+1)%total; inner.style.transform=`translateX(-${slide*100}%)`; track('carousel_next', {slide_index: slide}); });
+
+  // --- ComboBox (simple)
+  const fruits = ['apple','apricot','banana','blueberry','cherry','grape','mango','orange','peach','pear','plum','strawberry'];
+  const combo = document.getElementById('combo');
+  const comboList = document.getElementById('combo-list');
+  combo.addEventListener('input', ()=>{
+    const q = combo.value.toLowerCase();
+    const items = fruits.filter(f=>f.includes(q)).slice(0,6);
+    comboList.innerHTML = items.map(i=>`<button class="btn" style="width:100%; text-align:left; margin:4px 0">${i}</button>`).join('');
+    comboList.style.display = items.length ? 'block' : 'none';
+  });
+  comboList.addEventListener('click', (e)=>{
+    if(e.target.tagName==='BUTTON'){
+      const val = e.target.textContent.trim();
+      combo.value = val;
+      comboList.style.display='none';
+      combo.focus();
+      track('combobox_select', {value: val});
+    }
+  });
+  document.addEventListener('click',(e)=>{ if(!combo.parentElement.contains(e.target)) comboList.style.display='none'; });
+
+  // --- Keyboard helpers
+  let labelsVisible = true;
+  const setLabels = (v)=>{ document.querySelectorAll('[data-chip], .label').forEach(el=> el.style.display = v ? 'inline-flex' : 'none'); };
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='?'){ labelsVisible = !labelsVisible; setLabels(labelsVisible); track('kbd_labels_toggle', {visible: labelsVisible}); }
+    if(e.key.toLowerCase()==='t'){ // cycle accent hue
+      const hues = [
+        ['#6aa3ff','#9b8cff'], ['#61dfff','#7af0d8'], ['#ff7ac3','#ffc46e'], ['#a1ff6a','#6affc2']
+      ];
+      const pick = hues[Math.floor(Math.random()*hues.length)];
+      document.documentElement.style.setProperty('--accent', pick[0]);
+      document.documentElement.style.setProperty('--accent-2', pick[1]);
+      track('kbd_theme_cycle', {accent: pick[0], accent2: pick[1]});
+    }
+  });
+
+  // --- Accessibility niceties
+  // Focus trap (minimal) when modal open
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Tab' && modal.getAttribute('aria-hidden')==='false'){
+      const focusables = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if(!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length-1];
+      if(e.shiftKey && document.activeElement===first){ last.focus(); e.preventDefault(); }
+      else if(!e.shiftKey && document.activeElement===last){ first.focus(); e.preventDefault(); }
+    }
+  });
+
+  // --- Forms & controls tracking
+  const cb = document.getElementById('c1');
+  if(cb){ cb.addEventListener('change', ()=> track('checkbox_change', {id:'c1', checked: cb.checked})); }
+  document.querySelectorAll('input[name="plan"]').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      const label = r.closest('label');
+      const value = label ? label.textContent.trim() : null;
+      track('radio_change', {name:'plan', value});
+    });
+  });
+  const sw = document.getElementById('sw1');
+  if(sw){ sw.addEventListener('change', ()=> track('switch_change', {id:'sw1', checked: sw.checked})); }
+  const rng = document.querySelector('input[type="range"]');
+  if(rng){ rng.addEventListener('change', ()=> track('slider_change', {value: Number(rng.value)})); }
+  const sel = document.getElementById('i3');
+  if(sel){ sel.addEventListener('change', ()=> track('select_change', {value: sel.value})); }
+  const tf = document.getElementById('i1');
+  if(tf){ tf.addEventListener('blur', ()=> track('text_input', {id:'i1'})); }
+  const ta = document.getElementById('i2');
+  if(ta){ ta.addEventListener('blur', ()=> track('text_area_input', {id:'i2'})); }
+  const dateInput = document.querySelector('input[type="date"]');
+  if(dateInput){ dateInput.addEventListener('change', ()=> track('date_change', {value: dateInput.value || null})); }
+  const timeInput = document.querySelector('input[type="time"]');
+  if(timeInput){ timeInput.addEventListener('change', ()=> track('time_change', {value: timeInput.value || null})); }
+
+  // --- Accordion
+  document.querySelectorAll('.accordion details').forEach(d=>{
+    d.addEventListener('toggle', ()=>{
+      const sum = d.querySelector('summary');
+      track('accordion_toggle', {section: sum ? sum.textContent.trim() : null, open: d.open});
+    });
+  });
+
+  // --- Breadcrumb & Pagination
+  document.querySelectorAll('.breadcrumb a').forEach(a=> a.addEventListener('click', ()=> track('breadcrumb_click', {label: a.textContent.trim(), href: a.getAttribute('href')})));
+  document.querySelectorAll('.pagination .pg').forEach(btn=> btn.addEventListener('click', ()=>{
+    const label = btn.getAttribute('aria-label') || btn.textContent.trim();
+    let action = label;
+    if(label==='‹') action = 'prev';
+    if(label==='›') action = 'next';
+    track('pagination_click', {action});
+  }));
+</script>
+</body>
+</html>
