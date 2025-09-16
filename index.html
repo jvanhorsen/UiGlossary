@@ -93,6 +93,17 @@
   #theme-switch-wrap .thumb{position:absolute}
   #theme-switch-wrap .thumb::after{content:'☾'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:12px; color:#c8d1e1}
   #theme-switch-wrap input:checked + .track .thumb::after{content:''}
+  /* Xray overlay */
+  .xray-dim{opacity:.2}
+  .xray-overlay{position:fixed; inset:0; pointer-events:auto; z-index:999; opacity:1; backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px)}
+  .xray-overlay::before{content:''; position:absolute; inset:0; background:rgba(14,22,40,.8); z-index:0}
+  .xray-box{position:absolute; z-index:1; border-radius:10px; opacity:1}
+  .xray-level-1{border:2px solid #7690C9; outline:none; box-shadow:none}
+  .xray-level-2{border:2px solid #7690C9; outline:none; box-shadow:none}
+  .xray-level-3{outline:2px dashed #7690C9; box-shadow:0 0 0 2px rgba(118,144,201,.35)}
+  .xray-level-4{outline:1.5px dashed #7690C9; box-shadow:0 0 0 1.5px rgba(118,144,201,.28)}
+  .xray-label{position:absolute; z-index:2; top:-20px; left:0; background:#7690C9; color:#0b0d12; padding:2px 6px; border-radius:6px; font-size:11px; font-weight:800; letter-spacing:.03em; box-shadow:0 1px 0 rgba(0,0,0,.2)}
+  
   .hero{
     display:grid; grid-template-columns: 1.1fr .9fr; gap:28px; align-items:center; margin-top:16px
   }
@@ -270,6 +281,7 @@
         <a href="#data-display">Data Display</a>
         <a href="#overlays">Overlays</a>
         <a id="suggest-link" target="_blank" rel="noopener noreferrer" href="https://github.com/jvanhorsen/UiGlossary/issues/new?title=Suggestion%3A%20%5BComponent%20Name%5D&body=Please%20provide%20details%3A%0A%0A-%20Component%20name%3A%0A-%20Synonyms%3A%0A-%20Category%20(Layout%2FInputs%2FNavigation%2FData%20Display%2FFeedback%2FOverlays)%3A%0A-%20Why%20it%27s%20useful%3A%0A-%20Example%20links%3A%0A-%20Notes%3A%0A%0AThanks!&labels=suggestion" class="btn primary">Suggest a component</a>
+        <button class="btn" id="xray-toggle" aria-pressed="false" title="Toggle Xray (B)">Xray</button>
       </div>
     </div>
   </div>
@@ -284,9 +296,9 @@
           the <span class="badge">canonical name</span>, and any common synonyms.
         </p>
         <div class="cta-row">
-          <button class="btn primary" id="open-modal">Open “Modal / Dialog”</button>
-          <button class="btn" id="open-drawer">Open “Drawer”</button>
-          <button class="btn ghost" id="show-toast">Show “Toast / Snackbar”</button>
+          <button class="btn primary" id="open-modal">Open "Modal / Dialog"</button>
+          <button class="btn" id="open-drawer">Open "Drawer"</button>
+          <button class="btn ghost" id="show-toast">Show "Toast / Snackbar"</button>
         </div>
         <div class="syn tiny" style="margin-top:10px">
           Tip: press <span class="kbd">?</span> to toggle labels, <span class="kbd">T</span> to cycle theme accents.
@@ -297,7 +309,7 @@
         <div class="grid cols-2">
           <div class="stack">
             <span class="badge">Canonical name</span>
-            <span class="tiny">What I’ll call it in conversation & code.</span>
+            <span class="tiny">What I'll call it in conversation & code.</span>
           </div>
           <div class="stack">
             <span class="chip"><span>Synonyms</span></span>
@@ -600,7 +612,7 @@
             <input type="date" class="input" />
             <input type="time" class="input" />
           </div>
-          <div class="tiny" style="margin-top:6px">Real apps use richer calendars; this shows the control’s name.</div>
+          <div class="tiny" style="margin-top:6px">Real apps use richer calendars; this shows the control's name.</div>
         </div>
       </div>
     </section>
@@ -609,7 +621,7 @@
     <footer class="footer">
       <div class="row">
         <div>
-          <div class="tiny">Names here align with modern design systems: “Tabs”, “ComboBox”, “Toast”, “Drawer”, “Chip”, etc.</div>
+          <div class="tiny">Names here align with modern design systems: "Tabs", "ComboBox", "Toast", "Drawer", "Chip", etc.</div>
           <div class="tiny"><i>As defined by ChatGPT 5 - Sept. 14, 2025</i></div>
           <div class="tiny" id="version-stamp">v0.1 • Last updated: <span id="last-updated"></span></div>
         </div>
@@ -851,6 +863,115 @@
     r.addEventListener('input', ()=> setRangeFill(r));
     r.addEventListener('change', ()=> setRangeFill(r));
   });
+
+  // --- XRAY mode
+  const xrayBtn = document.getElementById('xray-toggle');
+  let xrayOn = false; let xrayLayer = null;
+  const targets = [
+    { sel: '.nav', label: 'TOP APP BAR', level:1 },
+    { sel: 'main', label: 'MAIN', level:1 },
+    { sel: 'section.hero', label: 'HERO', level:1 },
+    { sel: '#layout', label: 'SECTION: LAYOUT', level:1 },
+    { sel: '#inputs', label: 'SECTION: INPUTS', level:1 },
+    { sel: '#navigation', label: 'SECTION: NAVIGATION', level:1 },
+    { sel: '#data-display', label: 'SECTION: DATA DISPLAY', level:1 },
+    { sel: '#feedback', label: 'SECTION: FEEDBACK', level:1 },
+    { sel: '#overlays', label: 'SECTION: OVERLAYS', level:1 },
+    { sel: 'footer', label: 'FOOTER', level:1 }
+  ];
+  const ensureLayer = ()=>{
+    if(!xrayLayer){
+      xrayLayer = document.createElement('div');
+      xrayLayer.className = 'xray-overlay';
+      xrayLayer.dataset.xray = 'layer';
+      document.body.appendChild(xrayLayer);
+      // click anywhere on overlay to dismiss
+      xrayLayer.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); if(xrayOn) disableXray(); });
+    }
+  };
+  const clearBoxes = ()=>{ if(xrayLayer){ xrayLayer.querySelectorAll('.xray-box').forEach(n=> n.remove()); } };
+  const buildXray = ()=>{
+    ensureLayer(); clearBoxes();
+    targets.forEach(t=>{
+      const el = document.querySelector(t.sel);
+      if(!el) return;
+      const r = el.getBoundingClientRect();
+      const box = document.createElement('div');
+      box.className = 'xray-box xray-level-' + (t.level || 1);
+      box.style.left = r.left + 'px';
+      box.style.top = r.top + 'px';
+      box.style.width = r.width + 'px';
+      box.style.height = r.height + 'px';
+      const lab = document.createElement('div');
+      lab.className = 'xray-label'; lab.textContent = t.label;
+      // If the element is close to the top, place label inside the box
+      lab.style.left = '4px';
+      lab.style.top = (r.top < 24 ? '4px' : '-20px');
+      box.appendChild(lab); xrayLayer.appendChild(box);
+    });
+  };
+  const enableXray = ()=>{
+    xrayOn = true;
+    // If mobile nav is open, close it to avoid overlap
+    try{
+      const mq = window.matchMedia && window.matchMedia('(max-width: 860px)').matches;
+      const navLinksEl = document.getElementById('primary-links');
+      const navToggleEl = document.getElementById('nav-toggle');
+      if(mq && navLinksEl && navLinksEl.classList.contains('open')){
+        navLinksEl.classList.remove('open');
+        if(navToggleEl) navToggleEl.setAttribute('aria-expanded','false');
+      }
+    }catch(_){ }
+    buildXray();
+    if(xrayBtn){ xrayBtn.setAttribute('aria-pressed','true'); xrayBtn.classList.add('primary'); }
+  };
+  const disableXray = ()=>{ xrayOn = false; if(xrayLayer){ xrayLayer.remove(); xrayLayer=null; } if(xrayBtn){ xrayBtn.setAttribute('aria-pressed','false'); xrayBtn.classList.remove('primary'); } };
+  const toggleXray = ()=>{ xrayOn ? disableXray() : enableXray(); };
+  if(xrayBtn){ xrayBtn.addEventListener('click', toggleXray); }
+  document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='b'){ xrayOn ? disableXray() : runEnable(); } });
+ 
+  // finer-grained boxes after initial build
+  const buildFineGrained = ()=>{
+    if(!xrayOn) return;
+    ensureLayer();
+    const addAll = (selector, label, level)=>{
+      document.querySelectorAll(selector).forEach(el=>{
+        const r = el.getBoundingClientRect();
+        const box = document.createElement('div');
+        box.className = 'xray-box xray-level-' + level;
+        box.style.left = r.left + 'px'; box.style.top = r.top + 'px';
+        box.style.width = r.width + 'px'; box.style.height = r.height + 'px';
+        const lab = document.createElement('div'); lab.className='xray-label'; lab.textContent = label;
+        box.appendChild(lab); xrayLayer.appendChild(box);
+      });
+    };
+    addAll('.card', 'CARD', 2);
+    addAll('.panel', 'PANEL', 3);
+    addAll('input.input, textarea, select', 'FIELD', 4);
+    addAll('.btn', 'BUTTON', 4);
+  };
+  const observer = new MutationObserver((records)=>{
+    if(!xrayOn) return;
+    // Ignore mutations originating from the xray overlay itself
+    const touchesOverlay = records.some(r=>{
+      const t = r.target;
+      if(xrayLayer && (t===xrayLayer || (t.nodeType===1 && xrayLayer.contains(t)))) return true;
+      for(const n of r.addedNodes){ if(n.nodeType===1 && (n===xrayLayer || (xrayLayer && xrayLayer.contains(n)))) return true; }
+      for(const n of r.removedNodes){ if(n.nodeType===1 && (n===xrayLayer)) return true; }
+      return false;
+    });
+    if(touchesOverlay) return;
+    buildXray(); buildFineGrained();
+  });
+  observer.observe(document.body, { subtree:true, childList:true, attributes:false });
+  // enhance on enable
+  const runEnable = ()=>{ enableXray(); requestAnimationFrame(()=>{ if(xrayLayer){ buildFineGrained(); } }); };
+  if(xrayBtn){ xrayBtn.removeEventListener('click', toggleXray); xrayBtn.addEventListener('click', ()=> xrayOn ? disableXray() : runEnable()); }
+  // Rebuild on scroll/resize to keep boxes aligned
+  let rebuildScheduled = false;
+  const rebuildAll = ()=>{ if(!xrayOn || rebuildScheduled) return; rebuildScheduled = true; requestAnimationFrame(()=>{ rebuildScheduled = false; buildXray(); buildFineGrained(); }); };
+  window.addEventListener('resize', rebuildAll);
+  window.addEventListener('scroll', rebuildAll, { passive:true });
 
   // --- Anchor copy buttons
   document.querySelectorAll('.anchor-btn').forEach(btn=>{
