@@ -87,7 +87,7 @@ Changelog
  - 2025-09-15: Exported `og-image.png` from the local SVG and set it as primary OG/Twitter image (kept SVG as backup).
  - 2025-09-15: Added footer version stamp (v0.1) and auto-filled “Last updated” date.
  - 2025-09-15: Added anchor copy buttons on section titles; copies deep link and tracks `anchor_copy`.
- - 2025-09-15: Removed the light/dark theme toggle from the UI (left CSS for future use).
+ - 2025-09-15: Reintroduced light mode as a navbar switch; persists to localStorage and tracks `theme_toggle`.
 
 GA4 custom definitions (recommended mappings)
 Why: Custom event parameters don’t automatically appear in standard GA4 reports. Register them as Custom dimensions/metrics in Admin to analyze and build comparisons/segments. Keep under GA4 limits (typically ~50 event-scoped dimensions and ~50 custom metrics per property). Prefer low-cardinality fields.
