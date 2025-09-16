@@ -1,7 +1,7 @@
 UI Glossary Audit — 2025-09-15
 
 Summary
-- This document captures a review of `Elements.html` as a shared UI vocabulary and demo.
+- This document captures a review of `index.html` as a shared UI vocabulary and demo.
 - Overall structure and naming are strong. A few taxonomy misplacements, missing staples, and accessibility upgrades are recommended.
 
 Corrections and Clarifications
