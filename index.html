@@ -44,6 +44,7 @@
     --border:#232838; --chip:#20263b; --shadow: 0 6px 20px rgba(0,0,0,.35);
     --radius:12px; --radius-sm:8px; --radius-lg:16px; --focus: 0 0 0 3px rgba(106,163,255,.35);
     --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+    --range-track:#1a2030; --range-border:#2f3b54;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -60,10 +61,12 @@
   }
   .nav__inner{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 24px; position:relative}
   .brand{display:flex;align-items:center;gap:12px;font-weight:700}
-  .brand__logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow: var(--shadow)}
+  .brand__logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow: var(--shadow); padding:2px}
+  .brand__logo .brand__img{width:100%; height:100%; display:block; border-radius:6px; object-fit:cover; background:var(--panel)}
   .nav__links{display:flex;gap:16px; flex-wrap:wrap}
-  .nav__links a{padding:8px 10px;border-radius:8px}
+  .nav__links a{padding:6px 8px;border-radius:8px; font-size:13px}
   .nav__links a:hover{background:rgba(255,255,255,.05)}
+  .nav__links .btn{padding:6px 10px; font-size:13px; border-radius:8px}
   .nav__toggle{display:none; appearance:none; border:1px solid var(--border); background:#141a28; color:var(--text); padding:0; border-radius:8px; cursor:pointer; position:relative; width:40px; height:36px}
   .nav__toggle .bar{position:absolute; width:20px; height:2px; left:50%; transform:translateX(-50%); background:var(--text); border-radius:2px; transition:transform .2s ease, opacity .2s ease}
   .nav__toggle .bar.top{top:12px}
@@ -72,6 +75,24 @@
   .nav__toggle[aria-expanded="true"] .bar.top{transform:translateX(-50%) rotate(45deg); top:17px}
   .nav__toggle[aria-expanded="true"] .bar.middle{opacity:0}
   .nav__toggle[aria-expanded="true"] .bar.bottom{transform:translateX(-50%) rotate(-45deg); top:17px}
+  /* Theme switch icons */
+  #theme-switch-wrap .track{width:48px}
+  #theme-switch-wrap .ico{position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#c8d1e1; opacity:.8; pointer-events:none}
+  #theme-switch-wrap .ico.sun{left:6px}
+  #theme-switch-wrap .ico.moon{right:6px}
+  /* Nudge moon icon for better centering */
+  #theme-switch-wrap .ico.moon{right:10px; transform:translate(1px,-50%)}
+  #theme-switch-wrap input:checked + .track .thumb{left:29px}
+  #theme-switch-wrap input:checked + .track .ico.sun{opacity:1}
+  #theme-switch-wrap input:not(:checked) + .track .ico.moon{opacity:1}
+  /* Sun visibility adjustments per theme */
+  :root[data-theme="light"] #theme-switch-wrap .ico.sun{color:#d39c00; text-shadow:0 0 1px rgba(0,0,0,.25)}
+  :root:not([data-theme="light"]) #theme-switch-wrap .ico.sun{color:#ffdf6e; text-shadow:0 0 2px rgba(0,0,0,.6)}
+  /* Place icon inside thumb for perfect centering; hide track icons */
+  #theme-switch-wrap .ico{display:none}
+  #theme-switch-wrap .thumb{position:absolute}
+  #theme-switch-wrap .thumb::after{content:'☾'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:12px; color:#c8d1e1}
+  #theme-switch-wrap input:checked + .track .thumb::after{content:''}
   .hero{
     display:grid; grid-template-columns: 1.1fr .9fr; gap:28px; align-items:center; margin-top:16px
   }
@@ -179,13 +200,62 @@
   :root[data-theme="light"] .card{background:var(--card); border-color:var(--border)}
   :root[data-theme="light"] .chip{background:#f3f6fb; border-color:var(--border)}
   :root[data-theme="light"] .input, :root[data-theme="light"] select, :root[data-theme="light"] textarea{background:#ffffff; border-color:#dbe1ea; color:var(--text)}
+  /* Light theme contrast fixes */
+  :root[data-theme="light"] .nav{background:rgba(255,255,255,.75); border-bottom-color:#dbe1ea}
+  :root[data-theme="light"] .tab[aria-selected="true"]{background:#eef2f8; border-color:#dbe1ea; border-bottom-color:#eef2f8}
+  :root[data-theme="light"] .tooltip .tip{background:#ffffff; border-color:#dbe1ea; color:var(--text)}
+  :root[data-theme="light"] .popover .pop{background:#ffffff; border-color:#dbe1ea; color:var(--text)}
+  :root[data-theme="light"] .progress{background:#e9eef7; border-color:#dbe1ea}
+  :root[data-theme="light"] .spinner{border-color:#dbe1ea; border-top-color:var(--accent)}
+  :root[data-theme="light"] .skeleton{background:linear-gradient(90deg,#eef2f8, #e6ecf7, #eef2f8)}
+  :root[data-theme="light"] .carousel__slide{background:#f3f6fb}
+  :root[data-theme="light"] .alert.ok{background:#e7f5ef; border-color:#bfe3d1; color:#0b0d12}
+  :root[data-theme="light"] .alert.warn{background:#fff4d6; border-color:#f1d39c; color:#0b0d12}
+  :root[data-theme="light"] .alert.err{background:#fde7e7; border-color:#f5bcbc; color:#0b0d12}
+  :root[data-theme="light"] .pagination .pg{background:#ffffff; border-color:#dbe1ea; color:#0b0d12}
+  :root[data-theme="light"] .pagination .pg:hover{background:#f3f6fb}
+  :root[data-theme="light"] .pagination .pg[aria-current="page"]{background:#eef2f8; border-color:#cdd7e6; color:#0b0d12; font-weight:700}
+  /* Dark theme pagination readability */
+  .pagination .pg{color:#e6e9ef}
+  .pagination .pg:hover{background:#1a2030}
+  .pagination .pg[aria-current="page"]{background:#222a3c; border-color:#3a4763; color:#ffffff; font-weight:700}
+  /* Light theme accordion readability */
+  :root[data-theme="light"] .accordion details{background:#ffffff; border-color:#dbe1ea; color:var(--text)}
+  :root[data-theme="light"] .accordion details[open]{background:#f7f9fc}
+  :root[data-theme="light"] .accordion summary{color:#0b0d12}
+  /* Light theme chips/pills use accent hues */
+  :root[data-theme="light"] .pill{background:#eef2f8; border-color:#cdd7e6; color:#2f3b54}
+  /* Dark theme example panels contrast (Container/Grid/Card demos) */
+  .card .panel{background:#1a2030; border-color:#2f3b54}
+  /* Dark theme form controls contrast */
+  .input, select, textarea{background:#1a2030; border-color:#2f3b54; color:var(--text)}
+  .input::placeholder, textarea::placeholder{color:#aeb6c7}
+  .radio, .checkbox{background:#121a2a; border:1px solid #2f3b54; padding:6px 8px; border-radius:8px}
+  #combo-list{background:#1a2030 !important; border-color:#2f3b54 !important}
+  input[type="range"]{appearance:none; height:6px; border:1px solid var(--range-border); border-radius:999px; background:
+    linear-gradient(90deg, var(--accent), var(--accent)) 0/var(--range-progress, 0%) 100% no-repeat,
+    var(--range-track);
+  }
+  input[type="range"]::-webkit-slider-thumb{appearance:none; width:14px; height:14px; border-radius:50%; background:#c8d1e1; border:1px solid #2f3b54}
+  input[type="range"]::-moz-range-thumb{width:14px; height:14px; border-radius:50%; background:#c8d1e1; border:1px solid #2f3b54}
+  /* Light mode fixes for controls */
+  :root[data-theme="light"] .checkbox, :root[data-theme="light"] .radio{background:#ffffff; border:1px solid #dbe1ea; color:var(--text)}
+  :root[data-theme="light"] .switch .track{background:#e9eef7; border-color:#cdd7e6}
+  :root[data-theme="light"] .switch .thumb{background:#ffffff}
+  :root[data-theme="light"] input[type="range"]{--range-track:#e9eef7; --range-border:#cdd7e6}
+  :root[data-theme="light"] input[type="range"]::-webkit-slider-thumb{background:#ffffff; border:1px solid var(--range-border)}
+  :root[data-theme="light"] input[type="range"]::-moz-range-thumb{background:#ffffff; border:1px solid var(--range-border)}
 </style>
 </head>
 <body>
   <!-- NAVBAR -->
   <div class="nav" role="navigation" aria-label="Primary">
     <div class="nav__inner container">
-      <div class="brand"><div class="brand__logo" aria-hidden="true"></div> UI Component Glossary</div>
+      <div class="brand"><div class="brand__logo" aria-hidden="true"><img class="brand__img" src="apple-touch-icon.png" alt="" /></div> UI Component Glossary</div>
+      <label class="switch" id="theme-switch-wrap" style="margin-right:8px" title="Toggle light mode">
+        <input type="checkbox" id="theme-switch" aria-label="Toggle light mode" />
+        <span class="track"><span class="thumb"></span><span class="ico sun" aria-hidden="true">☀︎</span><span class="ico moon" aria-hidden="true">☾</span></span>
+      </label>
       <button class="nav__toggle" id="nav-toggle" aria-expanded="false" aria-controls="primary-links" aria-label="Toggle navigation">
         <span class="sr-only">Menu</span>
         <span class="bar top"></span>
@@ -768,6 +838,20 @@
     track('pagination_click', {action});
   }));
 
+  // --- Range progress fill
+  const setRangeFill = (el)=>{
+    const min = Number(el.min || 0);
+    const max = Number(el.max || 100);
+    const val = Number(el.value || 0);
+    const pct = ((val - min) * 100) / (max - min);
+    el.style.setProperty('--range-progress', pct + '%');
+  };
+  document.querySelectorAll('input[type="range"]').forEach(r=>{
+    setRangeFill(r);
+    r.addEventListener('input', ()=> setRangeFill(r));
+    r.addEventListener('change', ()=> setRangeFill(r));
+  });
+
   // --- Anchor copy buttons
   document.querySelectorAll('.anchor-btn').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
@@ -783,6 +867,22 @@
   if(lastUpdatedEl){
     try{ const d = new Date(document.lastModified); lastUpdatedEl.textContent = d.toLocaleDateString(); }catch(_){ lastUpdatedEl.textContent = ''; }
   }
+
+  // --- Light mode switch
+  const themeSwitch = document.getElementById('theme-switch');
+  const setTheme = (isLight)=>{
+    const theme = isLight ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    try{ localStorage.setItem('theme', theme); }catch(_){ }
+    track('theme_toggle', {theme});
+  };
+  try{
+    const savedTheme = localStorage.getItem('theme');
+    const isLight = savedTheme ? savedTheme === 'light' : false;
+    if(themeSwitch){ themeSwitch.checked = isLight; }
+    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  }catch(_){ document.documentElement.setAttribute('data-theme','dark'); }
+  if(themeSwitch){ themeSwitch.addEventListener('change', ()=> setTheme(themeSwitch.checked)); }
 </script>
 </body>
 </html>
