@@ -88,6 +88,11 @@ Changelog
  - 2025-09-15: Added footer version stamp (v0.1) and auto-filled “Last updated” date.
  - 2025-09-15: Added anchor copy buttons on section titles; copies deep link and tracks `anchor_copy`.
  - 2025-09-15: Reintroduced light mode as a navbar switch; persists to localStorage and tracks `theme_toggle`.
+ - 2025-09-17: Fixed `architecture.html` connectors only rendering in top-left by sizing the SVG overlay to the canvas (`width/height`, `viewBox`, `preserveAspectRatio: none`) and CSS `width:100%;height:100%`.
+ - 2025-09-17: Added brand logo image inside `architecture.html` navbar square to match `index.html` styling.
+ - 2025-09-17: Unified light/dark theme across pages. Added theme switch to `database.html` and `architecture.html`, mirrored CSS variables and light theme overrides from `index.html`, and persisted selection via `localStorage`.
+ - 2025-09-17: Extracted shared site styles to `styles.css`; updated `index.html`, `database.html`, and `architecture.html` to load it. Introduced `arch-grid` to avoid grid class conflicts.
+ - 2025-09-17: Implemented reusable Web Components for navigation. Added `nav.js` defining `<site-nav>` (top bar with theme switch, active link state) and `<sub-nav>` (page section links and optional `.subnav__tools`). Replaced duplicated markup in all pages.
 
 GA4 custom definitions (recommended mappings)
 Why: Custom event parameters don’t automatically appear in standard GA4 reports. Register them as Custom dimensions/metrics in Admin to analyze and build comparisons/segments. Keep under GA4 limits (typically ~50 event-scoped dimensions and ~50 custom metrics per property). Prefer low-cardinality fields.

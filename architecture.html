@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture Lego Board — Functional Example</title>
+<link rel="stylesheet" href="styles.css" />
+<script defer src="nav.js"></script>
+
+</head>
+<body>
+  <site-nav active="architecture" title="Architecture Lego Board"></site-nav>
+
+  <sub-nav>
+    <a href="#canvas">Canvas</a>
+    <a href="#palette">Blocks</a>
+    <a href="#export">Export</a>
+    <div class="subnav__tools">
+      <button class="btn" id="connectBtn">Connect (S → T)</button>
+      <button class="btn" id="groupBtn">Group</button>
+      <button class="btn" id="deleteBtn">Delete</button>
+      <button class="btn" id="exportBtn">Export JSON</button>
+      <button class="btn" id="importBtn">Import JSON</button>
+      <button class="btn primary" id="promptBtn">Generate Prompt</button>
+    </div>
+  </sub-nav>
+  <div class="container arch-grid">
+    <!-- PALETTE -->
+    <aside class="panel palette" id="palette">
+      <div class="section-title"><h2>Blocks</h2><span class="chip">drag to canvas</span></div>
+      <div class="category">
+        <div class="item" draggable="true" data-kind="Frontend" data-color="#6aa3ff"><span class="dot" style="background:#6aa3ff"></span>Frontend (Web/App)</div>
+        <div class="item" draggable="true" data-kind="Backend" data-color="#9b8cff"><span class="dot" style="background:#9b8cff"></span>Backend (API)</div>
+        <div class="item" draggable="true" data-kind="Auth" data-color="#ffcc66"><span class="dot" style="background:#ffcc66"></span>Auth</div>
+        <div class="item" draggable="true" data-kind="Database" data-color="#3ddc97"><span class="dot" style="background:#3ddc97"></span>Database</div>
+        <div class="item" draggable="true" data-kind="Cache" data-color="#7af0d8"><span class="dot" style="background:#7af0d8"></span>Cache</div>
+        <div class="item" draggable="true" data-kind="Queue" data-color="#ff7ac3"><span class="dot" style="background:#ff7ac3"></span>Queue</div>
+        <div class="item" draggable="true" data-kind="Storage" data-color="#a1ff6a"><span class="dot" style="background:#a1ff6a"></span>Object Storage</div>
+        <div class="item" draggable="true" data-kind="CDN" data-color="#61dfff"><span class="dot" style="background:#61dfff"></span>CDN</div>
+        <div class="item" draggable="true" data-kind="Worker" data-color="#ffc46e"><span class="dot" style="background:#ffc46e"></span>Worker</div>
+        <div class="item" draggable="true" data-kind="Third‑Party" data-color="#ff6b6b"><span class="dot" style="background:#ff6b6b"></span>Third‑Party API</div>
+      </div>
+      <div class="section-title"><h2>Tips</h2><span class="chip">keyboard</span></div>
+      <div class="tiny">Hold <span class="kbd">Shift</span> to multi‑select. Press <span class="kbd">Del</span> to delete. Double‑click a node title to rename.</div>
+      <div class="section-title" id="export"><h2>Export / Prompt</h2><span class="chip">copy</span></div>
+      <textarea class="textarea" id="ioArea" placeholder="JSON/prompt output will appear here…"></textarea>
+    </aside>
+
+    <!-- CANVAS -->
+    <section class="canvas-wrap">
+      <div class="panel" style="margin-bottom:8px">
+        <span class="label">Diagram</span>
+        <div class="tiny">Drag blocks here, move them, select two and click <strong>Connect</strong> to draw a flow. Group to label a section.</div>
+      </div>
+      <div id="canvas" class="canvas panel">
+        <svg class="wires" id="wires"></svg>
+      </div>
+    </section>
+  </div>
+
+<script>
+  // --- Data model
+  const state = { nodes: {}, edges: [], selection: new Set(), mode: 'idle', lastId: 0, groups: [] };
+  const canvas = document.getElementById('canvas');
+  const wires = document.getElementById('wires');
+  const ioArea = document.getElementById('ioArea');
+  // --- Light mode switch (unified across pages)
+  (function(){
+    const themeSwitch = document.getElementById('theme-switch');
+    const setTheme = (isLight)=>{
+      const theme = isLight ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      try{ localStorage.setItem('theme', theme); }catch(_){ }
+    };
+    try{
+      const savedTheme = localStorage.getItem('theme');
+      const isLight = savedTheme ? savedTheme === 'light' : false;
+      if(themeSwitch){ themeSwitch.checked = isLight; }
+      document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    }catch(_){ document.documentElement.setAttribute('data-theme','dark'); }
+    if(themeSwitch){ themeSwitch.addEventListener('change', ()=> setTheme(themeSwitch.checked)); }
+  })();
+
+  const KINDS = {
+    'Frontend': {desc:'UI clients', ports:['in','out']},
+    'Backend': {desc:'APIs/services', ports:['in','out']},
+    'Auth': {desc:'identity/OIDC', ports:['in','out']},
+    'Database': {desc:'relational/doc/graph', ports:['in','out']},
+    'Cache': {desc:'kv cache', ports:['in','out']},
+    'Queue': {desc:'async jobs', ports:['in','out']},
+    'Storage': {desc:'object/blob', ports:['in','out']},
+    'CDN': {desc:'edge cache', ports:['in','out']},
+    'Worker': {desc:'background jobs', ports:['in','out']},
+    'Third‑Party': {desc:'external api', ports:['in','out']}
+  };
+
+  // --- Palette drag
+  document.querySelectorAll('.item[draggable]')
+    .forEach(el=>{
+      el.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/plain', JSON.stringify({kind: el.dataset.kind, color: el.dataset.color}));
+      });
+    });
+
+  canvas.addEventListener('dragover', e=>{ e.preventDefault(); });
+  canvas.addEventListener('drop', e=>{
+    e.preventDefault();
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    createNode(data.kind, data.color, e.offsetX, e.offsetY);
+  });
+
+  function createNode(kind, color, x, y){
+    const id = 'n' + (++state.lastId);
+    const div = document.createElement('div');
+    div.className = 'node';
+    div.style.left = (x-70) + 'px';
+    div.style.top = (y-30) + 'px';
+    div.style.borderColor = color; // accent per kind
+    div.dataset.id = id; div.dataset.kind = kind; div.dataset.color = color;
+    div.innerHTML = `<header><h4 contenteditable="true" spellcheck="false">${kind}</h4><span class="type">${kind}</span></header>
+    <footer><span class="port" title="out"></span><span class="port" title="in" style="opacity:.6"></span></footer>`;
+    canvas.appendChild(div);
+    state.nodes[id] = { id, kind, label: kind, x:x-70, y:y-30, color };
+    attachNodeHandlers(div);
+    draw();
+  }
+
+  function attachNodeHandlers(div){
+    const id = div.dataset.id;
+    // drag move
+    let drag = null;
+    div.addEventListener('mousedown', e=>{
+      if(e.button!==0) return;
+      if(!e.shiftKey && !state.selection.has(id)) { clearSelection(); select(id); }
+      if(e.shiftKey) select(id,true);
+      drag = {startX:e.clientX, startY:e.clientY};
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e=>{
+      if(!drag) return;
+      const dx = e.clientX - drag.startX; const dy = e.clientY - drag.startY;
+      drag.startX = e.clientX; drag.startY = e.clientY;
+      state.selection.forEach(nid=>{ const n = state.nodes[nid]; n.x += dx; n.y += dy; const el = nodeEl(nid); el.style.left=n.x+'px'; el.style.top=n.y+'px'; });
+      draw();
+    });
+    window.addEventListener('mouseup', ()=> drag=null);
+
+    // rename
+    div.querySelector('h4').addEventListener('input', e=>{ state.nodes[id].label = e.target.textContent.trim() || state.nodes[id].kind; });
+
+    // select on click
+    div.addEventListener('click', e=>{
+      if(state.mode==='connect') { handleConnectClick(id); e.preventDefault(); return; }
+      if(!e.shiftKey) { clearSelection(); }
+      select(id, true);
+      e.stopPropagation();
+    });
+  }
+
+  function nodeEl(id){ return canvas.querySelector(`.node[data-id="${id}"]`); }
+
+  canvas.addEventListener('click', ()=>{ if(state.mode!=='connect') clearSelection(); });
+  window.addEventListener('keydown', e=>{
+    if(e.key==='Delete') delSelection();
+  });
+
+  function select(id, keep){ if(!keep) clearSelection(); state.selection.add(id); nodeEl(id)?.classList.add('selected'); }
+  function clearSelection(){ state.selection.forEach(id=> nodeEl(id)?.classList.remove('selected')); state.selection.clear(); }
+
+  function delSelection(){
+    const ids = Array.from(state.selection);
+    ids.forEach(id=>{ delete state.nodes[id]; nodeEl(id)?.remove(); });
+    state.edges = state.edges.filter(e=> !ids.includes(e.from) && !ids.includes(e.to));
+    clearSelection(); draw();
+  }
+
+  // --- Connect mode
+  let connectSource = null;
+  document.getElementById('connectBtn').addEventListener('click', ()=>{
+    state.mode = (state.mode==='connect') ? 'idle' : 'connect';
+    connectSource = null;
+    flash(`Connect mode: ${state.mode==='connect' ? 'ON' : 'OFF'}. Click source then target.`);
+  });
+
+  function handleConnectClick(id){
+    if(!connectSource){ connectSource = id; nodeEl(id).classList.add('selected'); return; }
+    if(connectSource===id){ connectSource=null; return; }
+    state.edges.push({ from: connectSource, to: id });
+    connectSource = null; draw();
+  }
+
+  // --- Grouping (simple visual label)
+  document.getElementById('groupBtn').addEventListener('click', ()=>{
+    const ids = Array.from(state.selection);
+    if(ids.length===0) return;
+    const box = bounds(ids.map(i=>state.nodes[i]));
+    const label = prompt('Group label (e.g., "Core Services")');
+    if(!label) return;
+    const g = document.createElement('div');
+    g.className='node';
+    g.style.left=(box.x-16)+'px'; g.style.top=(box.y-16)+'px'; g.style.width=(box.w+32)+'px'; g.style.height=(box.h+48)+'px';
+    g.style.background='transparent'; g.style.borderStyle='dashed'; g.style.pointerEvents='none';
+    g.innerHTML = `<header><h4>${label}</h4><span class="type">Group</span></header>`;
+    canvas.appendChild(g); g.style.zIndex = 0; // behind nodes
+  });
+
+  function bounds(arr){
+    const xs = arr.map(n=>n.x), ys = arr.map(n=>n.y);
+    const ws = arr.map(id=> nodeEl(id.id||id)?.offsetWidth || 160);
+    const hs = arr.map(id=> nodeEl(id.id||id)?.offsetHeight || 80);
+    const x = Math.min(...xs), y = Math.min(...ys);
+    const w = Math.max(...xs.map((v,i)=> v + ws[i])) - x;
+    const h = Math.max(...ys.map((v,i)=> v + hs[i])) - y;
+    return {x,y,w,h};
+  }
+
+  // --- Wires rendering
+  function draw(){
+    // ensure the SVG overlay matches the canvas size so wires are not clipped
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    wires.setAttribute('width', w);
+    wires.setAttribute('height', h);
+    wires.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    wires.setAttribute('preserveAspectRatio', 'none');
+    wires.innerHTML='';
+    state.edges.forEach((e,i)=>{
+      const a = state.nodes[e.from], b = state.nodes[e.to];
+      if(!a||!b) return;
+      const start = {x:a.x + (nodeEl(a.id).offsetWidth||160), y:a.y + 28};
+      const end   = {x:b.x, y:b.y + 28};
+      const midX = (start.x + end.x)/2;
+      const path = `M ${start.x},${start.y} C ${midX},${start.y} ${midX},${end.y} ${end.x},${end.y}`;
+      const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d', path);
+      p.setAttribute('fill','none');
+      p.setAttribute('stroke','var(--accent)');
+      p.setAttribute('stroke-width','2');
+      p.setAttribute('marker-end','url(#arrow)');
+      wires.appendChild(p);
+    });
+    ensureArrowMarker();
+  }
+  function ensureArrowMarker(){
+    if(wires.querySelector('defs')) return;
+    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    const marker = document.createElementNS('http://www.w3.org/2000/svg','marker');
+    marker.setAttribute('id','arrow'); marker.setAttribute('viewBox','0 0 10 10');
+    marker.setAttribute('refX','8'); marker.setAttribute('refY','5'); marker.setAttribute('markerWidth','6'); marker.setAttribute('markerHeight','6'); marker.setAttribute('orient','auto-start-reverse');
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d','M 0 0 L 10 5 L 0 10 z'); path.setAttribute('fill','var(--accent)');
+    marker.appendChild(path); defs.appendChild(marker); wires.appendChild(defs);
+  }
+
+  // --- Export / Import
+  function snapshot(){
+    const nodes = Object.values(state.nodes).map(n=>({id:n.id, kind:n.kind, label:n.label, x:n.x, y:n.y, color:n.color}));
+    return { nodes, edges: state.edges.slice(0) };
+  }
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    ioArea.value = JSON.stringify(snapshot(), null, 2);
+    ioArea.select(); document.execCommand('copy');
+  });
+  document.getElementById('importBtn').addEventListener('click', ()=>{
+    try{
+      const data = JSON.parse(ioArea.value);
+      // reset
+      Object.keys(state.nodes).forEach(id=> nodeEl(id)?.remove());
+      state.nodes = {}; state.edges = []; state.selection.clear();
+      // nodes
+      data.nodes.forEach(n=>{ createNode(n.kind, n.color || '#6aa3ff', n.x+70, n.y+30); const created = state.nodes['n'+state.lastId]; created.label=n.label; nodeEl(created.id).querySelector('h4').textContent=n.label; });
+      // edges
+      // naive mapping: assumes same order; better mapping requires id retention
+      if(data.edges){
+        state.edges = data.edges.map(e=> ({from: e.from, to: e.to}));
+        draw();
+      }
+    }catch(err){ alert('Import failed: ' + err.message); }
+  });
+
+  // --- Generate Prompt
+  document.getElementById('promptBtn').addEventListener('click', ()=>{
+    const s = snapshot();
+    const lines = [];
+    lines.push('Design a cloud architecture with the following components and flows.');
+    lines.push('Components:');
+    s.nodes.forEach(n=> lines.push(`- ${n.id}: ${n.label} (${n.kind}) at x=${Math.round(n.x)}, y=${Math.round(n.y)}`));
+    lines.push('Connections:');
+    s.edges.forEach(e=> lines.push(`- ${e.from} -> ${e.to}`));
+    lines.push('Requirements:');
+    lines.push('- For each component, propose concrete services (e.g., Next.js, FastAPI, Postgres, Redis, S3, CloudFront).');
+    lines.push('- Provide IaC snippets (Terraform or Pulumi) and a minimal CI/CD outline.');
+    lines.push('- List security considerations (authz/authn, secrets, least privilege) and cost callouts.');
+    ioArea.value = lines.join('\n');
+    ioArea.select(); document.execCommand('copy');
+    flash('Prompt generated & copied.');
+  });
+
+  // --- Delete button
+  document.getElementById('deleteBtn').addEventListener('click', delSelection);
+
+  // --- Helpers
+  function flash(msg){
+    const b = document.createElement('div');
+    b.textContent = msg; b.style.position='fixed'; b.style.right='16px'; b.style.bottom='16px'; b.style.background='var(--panel)'; b.style.border='1px solid var(--border)'; b.style.padding='10px 12px'; b.style.borderRadius='10px'; b.style.boxShadow='var(--shadow)';
+    document.body.appendChild(b); setTimeout(()=> b.remove(), 1600);
+  }
+
+  // seed example
+  const seed = [
+    ['Frontend', 120, 120, '#6aa3ff'], ['CDN', 320, 120, '#61dfff'], ['Backend', 560, 120, '#9b8cff'],
+    ['Auth', 560, 260, '#ffcc66'], ['Database', 780, 120, '#3ddc97'], ['Cache', 780, 220, '#7af0d8'],
+    ['Queue', 560, 360, '#ff7ac3'], ['Worker', 780, 360, '#ffc46e'], ['Storage', 980, 200, '#a1ff6a'], ['Third‑Party', 980, 80, '#ff6b6b']
+  ];
+  seed.forEach(([k,x,y,c])=> createNode(k, c, x, y));
+  // seed edges
+  state.edges.push(
+    {from:'n1', to:'n2'}, {from:'n2', to:'n3'}, {from:'n3', to:'n4'}, {from:'n3', to:'n5'}, {from:'n3', to:'n6'},
+    {from:'n3', to:'n7'}, {from:'n7', to:'n8'}, {from:'n3', to:'n9'}, {from:'n3', to:'n10'}
+  );
+  draw();
+</script>
+</body>
+</html>

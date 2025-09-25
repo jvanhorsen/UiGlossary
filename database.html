@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Database & Data Shapes Explorer — Mockup</title>
+<link rel="stylesheet" href="styles.css" />
+<script defer src="nav.js"></script>
+<style>
+  :root{
+    /* keep consistent with UI Glossary theme */
+    --bg:#0b0d12; --panel:#12151d; --card:#171b24; --muted:#7a8599; --text:#e6e9ef;
+    --accent:#6aa3ff; --accent-2:#9b8cff; --border:#232838; --chip:#20263b;
+    --radius:12px; --radius-sm:8px; --radius-lg:16px; --shadow:0 6px 20px rgba(0,0,0,.35);
+    --focus:0 0 0 3px rgba(106,163,255,.35);
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, "Helvetica Neue", Arial;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,#0b0d12,#0c111b 50%, #0b0d12 100%);color:var(--text);font:15px/1.5 var(--font)}
+  a{color:var(--accent);text-decoration:none}
+  a:focus,button:focus,[data-chip]:focus{outline:none;box-shadow:var(--focus);border-radius:8px}
+  .container{max-width:1200px;margin:0 auto;padding:48px 24px}
+  .nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(1.3) blur(10px);background:rgba(11,13,18,.6);border-bottom:1px solid var(--border)}
+  .nav__inner{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 24px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+  .brand__logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow);padding:2px}
+  .nav__links{display:flex;gap:16px;flex-wrap:wrap}
+  .nav__links a{padding:8px 10px;border-radius:8px}
+  .nav__links a:hover{background:rgba(255,255,255,.05)}
+  .brand__logo .brand__img{width:100%;height:100%;display:block;border-radius:6px;object-fit:cover;background:var(--panel)}
+  /* Theme switch icons */
+  #theme-switch-wrap .track{width:48px}
+  #theme-switch-wrap .ico{position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#c8d1e1; opacity:.8; pointer-events:none}
+  #theme-switch-wrap .ico.sun{left:6px}
+  #theme-switch-wrap .ico.moon{right:6px}
+  /* nudge moon for centering */
+  #theme-switch-wrap .ico.moon{right:10px; transform:translate(1px,-50%)}
+  #theme-switch-wrap input:checked + .track .thumb{left:29px}
+  #theme-switch-wrap input:checked + .track .ico.sun{opacity:1}
+  #theme-switch-wrap input:not(:checked) + .track .ico.moon{opacity:1}
+  :root[data-theme="light"] #theme-switch-wrap .ico.sun{color:#d39c00; text-shadow:0 0 1px rgba(0,0,0,.25)}
+  :root:not([data-theme="light"]) #theme-switch-wrap .ico.sun{color:#ffdf6e; text-shadow:0 0 2px rgba(0,0,0,.6)}
+  /* place icon inside thumb */
+  #theme-switch-wrap .ico{display:none}
+  #theme-switch-wrap .thumb{position:absolute}
+  #theme-switch-wrap .thumb::after{content:'☾'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:12px; color:#c8d1e1}
+  #theme-switch-wrap input:checked + .track .thumb::after{content:''}
+  /* Switch base styles */
+  .switch input{display:none}
+  .switch .track{width:40px;height:22px;border-radius:999px;background:#2a3245; position:relative; border:1px solid var(--border)}
+  .switch .thumb{position:absolute; top:50%; left:3px; transform:translateY(-50%); width:16px; height:16px; border-radius:50%; background:#c8d1e1; transition:all .2s}
+  .switch input:checked + .track{background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+  .switch input:checked + .track .thumb{left:21px; background:#0b0d12}
+  .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;margin-top:16px}
+  .hero h1{font-size:34px;line-height:1.15;margin:0 0 12px}
+  .hero p{color:var(--muted);margin:0 0 18px}
+  .btn{appearance:none;border:1px solid var(--border);background:#1b2130;color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+  .btn:hover{background:#222a3c}
+  .btn.primary{border:none;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b0d12;font-weight:700}
+  .btn.ghost{background:transparent;border:1px dashed var(--border)}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  .grid{display:grid;gap:16px}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media (max-width:980px){.hero{grid-template-columns:1fr}.grid.cols-3{grid-template-columns:1fr 1fr}}
+  @media (max-width:680px){.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);position:relative}
+  .card h3{margin:0 0 2px;font-size:16px}
+  .card p{margin:0;color:var(--muted)}
+  .label{position:absolute;top:10px;right:10px;font-size:12px;color:#aeb6c7;background:var(--chip);border:1px solid var(--border);padding:4px 8px;border-radius:999px}
+  .syn{font-size:12px;color:#9aa3b6;margin-top:6px}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 10px}
+  .section-title h2{margin:0;font-size:18px}
+  .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:#111623;border:1px solid var(--border);color:#aeb6c7;font-size:12px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kbd{font-family:var(--mono);background:#0f1421;border:1px solid var(--border);padding:2px 6px;border-radius:6px;font-size:12px;color:#aeb6c7}
+  pre, code{font-family:var(--mono);font-size:13px}
+  pre{background:#0f1421;border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto;margin:10px 0 0 0}
+  .toggle{display:flex;gap:8px;align-items:center}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--border);background:var(--chip);font-size:12px}
+  .table{width:100%;border-collapse:collapse;font-size:14px}
+  .table th,.table td{padding:8px;border-bottom:1px solid var(--border);text-align:left}
+  .legend{display:flex;gap:8px;flex-wrap:wrap}
+  .diagram{width:100%;height:180px;border:1px dashed var(--border);border-radius:10px;display:grid;place-items:center;color:#99a3b8;margin-top:10px}
+  .footer{margin-top:32px;color:#8892a8}
+  /* Light theme */
+  :root[data-theme="light"]{
+    --bg:#f7f9fc; --panel:#ffffff; --card:#ffffff; --muted:#5b677b; --text:#0b0d12;
+    --border:#dbe1ea; --chip:#f0f3f9;
+  }
+  :root[data-theme="light"] body{background:linear-gradient(180deg,#f7f9fc,#eef2f8 50%, #f7f9fc 100%)}
+  :root[data-theme="light"] .btn{background:#f3f6fb; border-color:#dbe1ea; color:var(--text)}
+  :root[data-theme="light"] .btn:hover{background:#e8eef7}
+  :root[data-theme="light"] .panel{background:var(--panel); border-color:var(--border)}
+  :root[data-theme="light"] .card{background:var(--card); border-color:var(--border)}
+  :root[data-theme="light"] .chip{background:#f3f6fb; border-color:var(--border)}
+  :root[data-theme="light"] .nav{background:rgba(255,255,255,.75); border-bottom-color:#dbe1ea}
+  :root[data-theme="light"] .table th, :root[data-theme="light"] .table td{border-bottom-color:#dbe1ea}
+</style>
+</head>
+<body>
+  <site-nav active="database" title="Data Shapes Explorer"></site-nav>
+
+  <sub-nav>
+    <a href="#relational">Relational</a>
+    <a href="#kv">Key/Value</a>
+    <a href="#document">Document</a>
+    <a href="#graph">Graph</a>
+    <a href="#columnar">Columnar</a>
+    <a href="#timeseries">Time Series</a>
+  </sub-nav>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <h1>Database & Data Shapes Explorer</h1>
+        <p>See the <strong>canonical data shapes</strong> (with synonyms), examples, and when to use each — then copy plain‑English prompts or code.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button id="toggle-mode" class="btn primary">Toggle Code / Plain English</button>
+          <button id="accent" class="btn">Cycle Theme Accent <span class="kbd">T</span></button>
+        </div>
+        <div class="syn" style="margin-top:8px">Tip: tap <span class="kbd">C</span> to switch views globally (Code ⇄ English).</div>
+      </div>
+      <div class="panel">
+        <div class="section-title"><h2>What’s inside</h2><span class="pill">Relational · KV · Document · Graph · Columnar · Time Series</span></div>
+        <div class="legend">
+          <span class="badge">Canonical name</span>
+          <span class="badge">Synonyms</span>
+          <span class="badge">Example data</span>
+          <span class="badge">Query (Code / English)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATIONAL -->
+    <section id="relational" style="margin-top:28px">
+      <div class="section-title"><h2>Relational (SQL)</h2><span class="pill">Table · Rows · Columns · Keys</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <span class="label">Relational Table</span>
+          <h3>Users</h3>
+          <p class="syn">Synonyms: <em>SQL table, spreadsheet-like</em></p>
+          <table class="table" aria-label="Relational table example" style="margin-top:10px">
+            <thead><tr><th>id</th><th>name</th><th>email</th><th>country</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Jane</td><td>jane@uni.edu</td><td>US</td></tr>
+              <tr><td>2</td><td>Raj</td><td>raj@acme.io</td><td>IN</td></tr>
+              <tr><td>3</td><td>Lina</td><td>lina@school.edu</td><td>DE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <span class="label">Query</span>
+          <h3>Find .edu users</h3>
+          <div class="toggle syn"><span class="badge">Code</span> ⇄ <span class="badge">Plain English</span></div>
+          <pre data-code>
+-- SQL
+SELECT id, name, email
+FROM users
+WHERE email LIKE '%.edu';
+          </pre>
+          <pre data-english hidden>
+Show id, name, and email for all users whose email ends with .edu.
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY/VALUE -->
+    <section id="kv" style="margin-top:28px">
+      <div class="section-title"><h2>Key / Value</h2><span class="pill">Hashmap · Dictionary · Cache</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <span class="label">Key/Value Store</span>
+          <h3>user:{id} → string/JSON</h3>
+          <p class="syn">Synonyms: <em>Redis, Memcached</em></p>
+          <div class="panel" style="margin-top:10px">
+            <pre>{
+  "user:1": "Jane",
+  "user:2": "Raj",
+  "user:3": "Lina"
+}</pre>
+          </div>
+          <div class="diagram">Fast lookups, ephemeral or cached data</div>
+        </div>
+        <div class="card">
+          <span class="label">Command</span>
+          <h3>Get a value</h3>
+          <pre data-code>
+# Redis
+GET user:1  -> "Jane"
+SET session:abc123 '{"uid":1,"exp":1699999999}' EX 3600
+          </pre>
+          <pre data-english hidden>
+Fetch the value for key "user:1". Store a short‑lived session object for one hour.
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCUMENT -->
+    <section id="document" style="margin-top:28px">
+      <div class="section-title"><h2>Document Store</h2><span class="pill">JSON Document · Nested · Flexible Schema</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <span class="label">Document</span>
+          <h3>users/{id}</h3>
+          <p class="syn">Synonyms: <em>MongoDB Document, Firestore Doc</em></p>
+          <pre>{
+  "_id": 123,
+  "name": "Jane",
+  "email": "jane@uni.edu",
+  "orders": [456, 789],
+  "address": { "city": "Boston", "country": "US" }
+}</pre>
+        </div>
+        <div class="card">
+          <span class="label">Query</span>
+          <h3>Find by nested field</h3>
+          <pre data-code>
+// MongoDB
+ db.users.find({ "address.country": "US", email: /\.edu$/ })
+          </pre>
+          <pre data-english hidden>
+Find all users in the US whose email ends with .edu.
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRAPH -->
+    <section id="graph" style="margin-top:28px">
+      <div class="section-title"><h2>Graph</h2><span class="pill">Nodes · Edges · Relationships</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <span class="label">Graph Model</span>
+          <h3>People & Follows</h3>
+          <p class="syn">Synonyms: <em>Neo4j (Cypher), Gremlin</em></p>
+          <div class="diagram" id="graph-diagram">(nodes) —► (edges)</div>
+          <div class="syn">Use for social, recommendations, network traversal.</div>
+        </div>
+        <div class="card">
+          <span class="label">Traversal</span>
+          <h3>Friends of friends</h3>
+          <pre data-code>
+// Cypher
+MATCH (a:User {name:"Jane"})-[:FOLLOWS]->(:User)-[:FOLLOWS]->(fof)
+RETURN DISTINCT fof LIMIT 25;
+          </pre>
+          <pre data-english hidden>
+Starting from Jane, find unique users who are followed by people Jane follows (friends‑of‑friends).
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNAR / OLAP -->
+    <section id="columnar" style="margin-top:28px">
+      <div class="section-title"><h2>Columnar / OLAP</h2><span class="pill">Analytics · Wide Tables · Compressed Columns</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <span class="label">Columnar Store</span>
+          <h3>Events (wide)</h3>
+          <p class="syn">Synonyms: <em>ClickHouse, BigQuery, Parquet</em></p>
+          <div class="diagram">Columns stored separately for fast aggregation</div>
+          <table class="table" aria-label="Events">
+            <thead><tr><th>ts</th><th>user_id</th><th>country</th><th>event</th></tr></thead>
+            <tbody>
+              <tr><td>2025‑09‑14T12:01</td><td>1</td><td>US</td><td>signup</td></tr>
+              <tr><td>2025‑09‑14T12:02</td><td>1</td><td>US</td><td>click:pricing</td></tr>
+              <tr><td>2025‑09‑14T12:05</td><td>2</td><td>IN</td><td>click:docs</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <span class="label">Aggregation</span>
+          <h3>Count users by country</h3>
+          <pre data-code>
+-- ClickHouse / BigQuery (SQL)
+SELECT country, COUNT(DISTINCT user_id) AS users
+FROM events
+WHERE ts >= now() - INTERVAL 7 DAY
+GROUP BY country
+ORDER BY users DESC;
+          </pre>
+          <pre data-english hidden>
+For the last 7 days, count unique users per country, sorted by the largest counts first.
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIME SERIES -->
+    <section id="timeseries" style="margin-top:28px">
+      <div class="section-title"><h2>Time Series</h2><span class="pill">Metrics · Observability · Append‑Only</span></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <span class="label">Time Series</span>
+          <h3>cpu_usage{host}</h3>
+          <p class="syn">Synonyms: <em>Prometheus, InfluxDB</em></p>
+          <table class="table" aria-label="metrics" style="margin-top:10px">
+            <thead><tr><th>timestamp</th><th>host</th><th>cpu</th></tr></thead>
+            <tbody>
+              <tr><td>2025‑09‑15 10:00</td><td>web‑1</td><td>0.65</td></tr>
+              <tr><td>2025‑09‑15 10:01</td><td>web‑1</td><td>0.67</td></tr>
+              <tr><td>2025‑09‑15 10:02</td><td>web‑1</td><td>0.61</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <span class="label">Query</span>
+          <h3>Windowed avg</h3>
+          <pre data-code>
+# PromQL
+avg_over_time(cpu_usage{host="web-1"}[5m])
+          </pre>
+          <pre data-english hidden>
+Compute the average CPU usage for host web‑1 over the past 5 minutes.
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHEN TO USE WHAT -->
+    <section style="margin-top:28px">
+      <div class="section-title"><h2>When should I use each?</h2><span class="pill">Rules of thumb</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Relational</h3>
+          <ul>
+            <li>Strong consistency, joins, constraints.</li>
+            <li>Back‑office CRUD, finance, multi‑table reports.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Key/Value</h3>
+          <ul>
+            <li>Ultra‑fast lookups/caching, sessions, rate limits.</li>
+            <li>Small atomic values, TTLs.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Document</h3>
+          <ul>
+            <li>Nested, evolving schemas, per‑entity blobs.</li>
+            <li>Feeds, user profiles, cart documents.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Graph</h3>
+          <ul>
+            <li>Path queries, recommendations, hierarchies.</li>
+            <li>Low‑latency traversals over relationships.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Columnar</h3>
+          <ul>
+            <li>Analytics at scale, aggregates, time windows.</li>
+            <li>Event pipelines, BI dashboards.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Time Series</h3>
+          <ul>
+            <li>Metrics, monitoring, downsampling, retention.</li>
+            <li>Append‑only, high‑ingest workloads.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="row">
+        <div>
+          <div class="syn">Names & examples align with common systems (Postgres/MySQL, Redis, MongoDB/Firestore, Neo4j, ClickHouse/BigQuery, Prometheus/Influx).</div>
+          <div class="syn">Switch the view to share prompts with AI in plain English or copy code directly.</div>
+        </div>
+        <div style="text-align:right"><span class="badge">Consistent with UI Glossary</span></div>
+      </div>
+    </footer>
+  </main>
+
+<script>
+  // --- Light mode switch (unified across pages)
+  (function(){
+    const themeSwitch = document.getElementById('theme-switch');
+    const setTheme = (isLight)=>{
+      const theme = isLight ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      try{ localStorage.setItem('theme', theme); }catch(_){ }
+    };
+    try{
+      const savedTheme = localStorage.getItem('theme');
+      const isLight = savedTheme ? savedTheme === 'light' : false;
+      if(themeSwitch){ themeSwitch.checked = isLight; }
+      document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    }catch(_){ document.documentElement.setAttribute('data-theme','dark'); }
+    if(themeSwitch){ themeSwitch.addEventListener('change', ()=> setTheme(themeSwitch.checked)); }
+  })();
+
+  // Global Code ⇄ English toggle
+  let showCode = true;
+  function setMode() {
+    document.querySelectorAll('pre[data-code]').forEach(el=> el.hidden = !showCode);
+    document.querySelectorAll('pre[data-english]').forEach(el=> el.hidden = showCode);
+  }
+  document.getElementById('toggle-mode').addEventListener('click', ()=>{ showCode = !showCode; setMode(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='c'){ showCode = !showCode; setMode(); } });
+  setMode();
+
+  // Accent hue cycle (T)
+  document.getElementById('accent').addEventListener('click', cycleAccent);
+  document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='t') cycleAccent(); });
+  function cycleAccent(){
+    const hues = [
+      ['#6aa3ff','#9b8cff'],['#61dfff','#7af0d8'],['#ff7ac3','#ffc46e'],['#a1ff6a','#6affc2']
+    ];
+    const pick = hues[Math.floor(Math.random()*hues.length)];
+    document.documentElement.style.setProperty('--accent', pick[0]);
+    document.documentElement.style.setProperty('--accent-2', pick[1]);
+  }
+
+  // Tiny animated graph diagram
+  (function(){
+    const el = document.getElementById('graph-diagram');
+    const w = 280, h = 140; // pseudo-canvas with SVG
+    el.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+        </marker>
+      </defs>
+      <circle id="n1" cx="50" cy="70" r="16" fill="#1a2131" stroke="var(--border)" />
+      <circle id="n2" cx="140" cy="40" r="16" fill="#1a2131" stroke="var(--border)" />
+      <circle id="n3" cx="140" cy="100" r="16" fill="#1a2131" stroke="var(--border)" />
+      <circle id="n4" cx="230" cy="70" r="16" fill="#1a2131" stroke="var(--border)" />
+      <line x1="66" y1="70" x2="124" y2="46" stroke="var(--accent)" stroke-width="2" marker-end="url(#arrow)" />
+      <line x1="66" y1="70" x2="124" y2="94" stroke="var(--accent)" stroke-width="2" marker-end="url(#arrow)" />
+      <line x1="156" y1="40" x2="214" y2="70" stroke="var(--accent)" stroke-width="2" marker-end="url(#arrow)" />
+      <line x1="156" y1="100" x2="214" y2="70" stroke="var(--accent)" stroke-width="2" marker-end="url(#arrow)" />
+    </svg>`;
+  })();
+</script>
+</body>
+</html>
