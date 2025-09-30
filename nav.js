@@ -11,6 +11,7 @@ class SiteNav extends HTMLElement{
           </label>
           <div class="nav__links" id="primary-links">
             <a href="index.html" ${active==='glossary'?'aria-current="page"':''}>Glossary</a>
+            <a href="landing.html" ${active==='landing'?'aria-current="page"':''}>Landing</a>
             <a href="architecture.html" ${active==='architecture'?'aria-current="page"':''}>Architecture</a>
             <a href="database.html" ${active==='database'?'aria-current="page"':''}>Database</a>
           </div>

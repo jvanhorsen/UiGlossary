@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SaaS Landing Anatomy — High-Converting Layout</title>
+  <meta name="description" content="Annotated, high-converting SaaS landing page layout built with existing styles." />
+  <link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="nav.js"></script>
+</head>
+<body>
+  <!-- NAVBAR (includes theme toggle) -->
+  <site-nav active="landing" title="SaaS Landing Anatomy"></site-nav>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <div class="tiny" style="margin-bottom:8px">1,200+ active users</div>
+        <h1>Clearly state the core value proposition</h1>
+        <p>Describe the key problem you solve in one or two succinct sentences. Keep it user-focused and concrete.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#pricing">Start free</a>
+          <a class="btn" href="#how">See how it works</a>
+        </div>
+        <div class="syn" style="margin-top:10px">Trusted by teams at</div>
+        <div class="stack" style="margin-top:6px; flex-wrap:nowrap; overflow:auto">
+          <span class="badge">Acme</span>
+          <span class="badge">Globex</span>
+          <span class="badge">Initech</span>
+          <span class="badge">Umbrella</span>
+          <span class="badge">Soylent</span>
+          <span class="badge">Hooli</span>
+        </div>
+      </div>
+      <div class="panel" aria-label="Product preview" style="height:240px; display:grid; place-items:center; color:#9aa3b6">Product video or screenshot</div>
+    </section>
+
+    <!-- BENEFITS / VALUE PROPS -->
+    <section id="benefits" style="margin-top:32px">
+      <div class="section-title"><h2>Benefits</h2><span class="pill">Focus on outcomes, not features</span></div>
+      <div class="grid cols-3">
+        <div class="card"><h3>Save time</h3><p>Automate repetitive tasks so teams can focus on impact.</p></div>
+        <div class="card"><h3>Reduce costs</h3><p>Eliminate tool sprawl with an all‑in‑one workflow.</p></div>
+        <div class="card"><h3>Improve accuracy</h3><p>Backed by analytics and guardrails to prevent mistakes.</p></div>
+        <div class="card"><h3>Collaborate faster</h3><p>Share work securely across teams and roles.</p></div>
+        <div class="card"><h3>Scale reliably</h3><p>Performance and uptime designed for growth.</p></div>
+        <div class="card"><h3>Enterprise ready</h3><p>SAML SSO, audit logs, and granular permissions.</p></div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" style="margin-top:32px">
+      <div class="section-title"><h2>How it works</h2><span class="pill">Get started in 3 simple steps</span></div>
+      <div class="grid cols-3">
+        <div class="card"><span class="label" data-chip>Step 1</span><h3>Create your account</h3><p>Sign up with email or SSO. No credit card required.</p></div>
+        <div class="card"><span class="label" data-chip>Step 2</span><h3>Connect your data</h3><p>One‑click integrations with popular tools.</p></div>
+        <div class="card"><span class="label" data-chip>Step 3</span><h3>Launch</h3><p>Invite teammates and start seeing results immediately.</p></div>
+      </div>
+    </section>
+
+    <!-- PRICING + TESTIMONIALS ROW -->
+    <section id="pricing" style="margin-top:32px">
+      <div class="section-title"><h2>Pricing</h2><span class="pill">Transparent, monthly billing</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Starter</h3>
+          <div class="syn" style="margin:6px 0 10px">$100 / month</div>
+          <div class="stack" style="margin:10px 0"><span class="badge">Feature A</span><span class="badge">Feature B</span></div>
+          <button class="btn" style="width:100%">Choose plan</button>
+        </div>
+        <div class="card" style="outline:2px solid var(--accent)">
+          <h3>Pro</h3>
+          <div class="syn" style="margin:6px 0 10px">$200 / month</div>
+          <div class="stack" style="margin:10px 0"><span class="badge">Everything in Starter</span><span class="badge">+ Advanced</span></div>
+          <button class="btn primary" style="width:100%">Start free</button>
+        </div>
+        <div class="card">
+          <h3>Advanced</h3>
+          <div class="syn" style="margin:6px 0 10px">$300 / month</div>
+          <div class="stack" style="margin:10px 0"><span class="badge">All Pro features</span><span class="badge">Priority support</span></div>
+          <button class="btn" style="width:100%">Contact sales</button>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:18px"><h2>Testimonials</h2><span class="pill">Place near pricing for conversion</span></div>
+      <div class="grid cols-3">
+        <div class="card"><p>“This product paid for itself in the first week.”</p><div class="syn" style="margin-top:8px">— Casey, PM</div></div>
+        <div class="card"><p>“Onboarding took minutes. Our team loves it.”</p><div class="syn" style="margin-top:8px">— Naomi, Eng Manager</div></div>
+        <div class="card"><p>“Exactly what we needed to scale operations.”</p><div class="syn" style="margin-top:8px">— Luis, COO</div></div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" style="margin-top:32px">
+      <div class="section-title"><h2>Frequently Asked Questions</h2><span class="pill">Address objections to help close</span></div>
+      <div class="grid cols-3">
+        <div class="card">
+          <details open><summary>Can I cancel anytime?</summary><div class="tiny" style="margin-top:6px">Yes. Plans are month‑to‑month and you can cancel in settings.</div></details>
+          <details style="margin-top:8px"><summary>Do you offer refunds?</summary><div class="tiny" style="margin-top:6px">Pro‑rated refunds are available within 14 days of billing.</div></details>
+        </div>
+        <div class="card">
+          <details open><summary>Is there a free trial?</summary><div class="tiny" style="margin-top:6px">Every plan starts with a 14‑day free trial.</div></details>
+          <details style="margin-top:8px"><summary>How is data secured?</summary><div class="tiny" style="margin-top:6px">Encryption at rest and in transit, regular audits, and SSO.</div></details>
+        </div>
+        <div class="card">
+          <details open><summary>Do you have an API?</summary><div class="tiny" style="margin-top:6px">Yes. REST and webhooks are available on Pro and above.</div></details>
+          <details style="margin-top:8px"><summary>What support is included?</summary><div class="tiny" style="margin-top:6px">Email support for Starter, priority support for Advanced.</div></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section id="cta" style="margin-top:32px">
+      <div class="panel" style="padding:28px; display:grid; gap:8px; text-align:center">
+        <h2 style="margin:0">Ready to get started?</h2>
+        <p class="syn" style="margin:0">Start your free trial today. No credit card required.</p>
+        <div class="cta-row" style="justify-content:center; margin-top:6px">
+          <a class="btn primary" href="#pricing">Start free</a>
+          <a class="btn" href="#faq">Talk to sales</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="row">
+        <div>
+          <div class="tiny">Layout inspired by high‑converting SaaS landing patterns.</div>
+          <div class="tiny"><i>Auto‑generated example</i></div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge">Light/Dark supported</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
